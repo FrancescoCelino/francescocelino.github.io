@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { m, useReducedMotion, useScroll, useTransform } from 'motion/react';
-import type { Project } from '../content/portfolio';
+import { portfolio, type Project } from '../content/portfolio';
 
 function Pipeline({
   progress,
@@ -91,13 +91,9 @@ function Pipeline({
               />
             ))}
           </div>
-          <p className="diagram-title">
-            Vision meets
-            <br />
-            the application.
-          </p>
+          <p className="diagram-title">{portfolio.projectLabels.inference}</p>
           <p className="diagram-detail">
-            Public demo: backend session processing
+            {portfolio.projectLabels.inferenceDetail}
           </p>
         </m.div>
         <m.div
@@ -108,11 +104,7 @@ function Pipeline({
           <div className="outcome-symbol" aria-hidden="true">
             ↳
           </div>
-          <p className="diagram-title">
-            Leave room
-            <br />
-            for uncertainty.
-          </p>
+          <p className="diagram-title">{portfolio.projectLabels.decision}</p>
           <div className="outcome-options">
             <span>PASS</span>
             <span>FAIL</span>
@@ -128,10 +120,7 @@ function Pipeline({
       <div className="pipeline-progress" aria-hidden="true">
         <m.div style={{ scaleX: reduced ? 1 : scaleX }} />
       </div>
-      <figcaption>
-        System schematic. The demo returns PASS, FAIL, or ESCALATE; it does not
-        display an estimated age.
-      </figcaption>
+      <figcaption>{portfolio.projectLabels.caption}</figcaption>
     </figure>
   );
 }
@@ -144,10 +133,14 @@ export function ProjectFeature({ project }: { project: Project }) {
     offset: ['start center', 'end center'],
   });
   return (
-    <article className="project" aria-labelledby={`${project.id}-title`}>
+    <article
+      id={project.id}
+      className="project"
+      aria-labelledby={`${project.id}-title`}
+    >
       <div className="project-intro">
         <div>
-          <p className="section-label">Featured engineering project</p>
+          <p className="section-label">{portfolio.projectLabels.feature}</p>
           <h3 id={`${project.id}-title`}>
             {project.title}
             <span className="project-period">.</span>
@@ -196,7 +189,7 @@ export function ProjectFeature({ project }: { project: Project }) {
             ↳
           </span>
           <div>
-            <h4>A note on privacy & the public demo</h4>
+            <h4>{portfolio.projectLabels.privacy}</h4>
             <p>{project.privacyNote}</p>
           </div>
         </aside>

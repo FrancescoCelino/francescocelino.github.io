@@ -1,12 +1,12 @@
 # Francesco Celino — AI engineering portfolio
 
-A static, responsive portfolio built with React, strict TypeScript, Vite, and Motion for React. The production destination is **https://francescocelino.github.io/**. There is no backend, tracking, camera access, or contact-form service.
+A static portfolio built with React, strict TypeScript, Vite, ordinary CSS, and Motion for React. The canonical destination is **https://francescocelino.github.io/**, with Vite base `/`. There is no backend, analytics, camera access, or contact-form service in this portfolio.
 
-The visual direction is **signal to system**: Sora display typography, a slate and copper palette, an original mathematical contour illustration, and a scroll-driven Maestro system study. All fonts and artwork are served locally.
+The site presents three different kinds of work: Maestro as an applied engineering project, MetaFlu as a research contribution, and participation in DAIY Lab. Sora and Source Sans 3, slate/copper colors, and original vector schematics carry the design. Fonts and runtime assets are local.
 
-## Develop locally
+## Develop and validate
 
-Use **Node 24 LTS** and npm. With nvm installed:
+Use **Node 24 LTS** (`.nvmrc`) and npm:
 
 ```sh
 nvm use
@@ -14,94 +14,60 @@ npm ci
 npm run dev
 ```
 
-Open the URL printed by Vite. `npm ci` installs the versions in `package-lock.json`; it is the reproducible alternative to resolving dependencies again.
+| Command           | Purpose                                                   |
+| ----------------- | --------------------------------------------------------- |
+| `npm run assets`  | Regenerate social artwork/icons and copy licensed fonts   |
+| `npm run format`  | Format source and documentation                           |
+| `npm run check`   | Check formatting, strict TypeScript, and ESLint           |
+| `npm run build`   | Build static production output into `dist/`               |
+| `npm run preview` | Serve the production build on localhost                   |
+| `npm test`        | Run content fixtures and production-preview browser tests |
 
-| Command           | Purpose                                                                   |
-| ----------------- | ------------------------------------------------------------------------- |
-| `npm run dev`     | Development server with live updates                                      |
-| `npm run check`   | Formatting, TypeScript, and ESLint                                        |
-| `npm run build`   | Type checking and static production build into `dist/`                    |
-| `npm run preview` | Preview the production build on port 4173                                 |
-| `npm test`        | Browser smoke tests, accessibility scans, and content-configuration tests |
-| `npm run format`  | Apply formatting                                                          |
-| `npm run assets`  | Regenerate sharing graphic/icons and copy licensed local fonts            |
+For first-time browser setup, run `npx playwright install chromium`. Build before testing: the tests serve `dist/`, not the development source. Stop any older preview before validation so Playwright starts the current production preview on port 4173.
 
-Before running tests for the first time, install their browser:
+Screenshots, Lighthouse reports, and test artifacts are generated locally and ignored by Git. See [validation evidence](docs/validation.md) for measured results and limitations.
 
-```sh
-npx playwright install chromium
-npm run build
-npm test
-```
+## Edit content
 
-The tests start a production preview automatically, or reuse an existing one on port 4173. Screenshots appear in `artifacts/`; the test report is in `playwright-report/`. Both are ignored by Git.
+**`src/content/portfolio.ts`** owns identity, biography, availability, services, headings, contact details, metadata, sharing text, and typed evidence records:
 
-## Customize the content
+- `portfolio` contains general content and the configured public email/LinkedIn. Empty contacts are omitted; GitHub becomes the fallback when email is absent.
+- `projects` contains application case studies using `Project`. Projects without `visual: 'age-verification'` receive neutral artwork; Maestro's schematic is specific to Maestro.
+- `research` uses `ResearchWork` to distinguish the personal contribution, collaborative context, methods, and publication record.
+- `lab` uses `LabParticipation` to describe participation and shared interests separately from individually authored work.
 
-Edit **`src/content/portfolio.ts`**. It owns the biography, services, availability, project records, contact fields, and canonical site URL. These values are public content, not secrets.
+Run `npm run assets` after changing sharing text, identity, or the site URL, then rebuild. Metadata is inserted and HTML-escaped at build time. The JavaScript-disabled fallback includes the research/lab destinations and conditionally rendered contact links.
 
-- Set `email` to your real address to enable the email CTA. Until then, the contact CTA opens the supplied GitHub profile.
-- Set `linkedin` to your real profile URL to show LinkedIn. Empty fields are omitted rather than rendered as broken links.
-- Update `availability` as your circumstances change.
-- Add another object to `projects` using the exported `Project` interface. Supply its title, category, summary, disciplines, links, and narrative stages. A neutral visual is used by default. `visual: 'age-verification'` is specific to Maestro; do not reuse it for unrelated work.
-- `privacyNote` is optional and should describe the particular project accurately.
+`ContactSection` receives explicit contact props. Missing-contact tests use isolated fixtures; they never edit the production content object or erase real contact details.
 
-The Maestro text deliberately distinguishes the production product, which is designed for on-device processing, from the public browser demo, which sends throttled JPEG frames to a separate backend. Its linked publication is a **technical report**. Do not add unsupported performance numbers, clients, credentials, or claims of peer review.
+## Content and provenance
 
-## How the motion works
+- **Maestro:** preserve the [demo](https://francescocelino.github.io/maestro-demo/), [repository](https://github.com/francescocelino/maestro-demo), and [technical report](https://doi.org/10.5281/zenodo.21509794). The production product is designed for on-device processing. The public demo sends throttled JPEG frames to a separate backend and returns PASS, FAIL, or ESCALATE without showing an estimated age. Do not imply the browser demo is fully on-device or make unverified retention claims.
+- **MetaFlu:** the modeling contribution is described from the owner's supplied facts. The [PubMed publication record](https://pubmed.ncbi.nlm.nih.gov/39965358/) confirms Francesco's co-authorship of _Collaborative forecasting of influenza-like illness in Italy: The Influcast experience_, published in _Epidemics_ (2025). Influcast's ensemble findings are collaborative results, not individual MetaFlu metrics. The diagram is illustrative and contains no study data. No MetaFlu repository or demo is asserted.
+- **DAIY Lab:** participation is supplied by the owner. The [lab website](https://22johngalt.github.io/DIY/), its [public source](https://github.com/22JohnGalt/DIY), and linked license were inspected. Describe its focus without turning illustrative tools or aspirations into released AI systems, or claiming collective work as personal output.
 
-The hero has a brief, staggered line reveal. Its vector surface translates and rotates subtly with scroll. On desktop, Maestro's sticky visual moves through input, session inference, and threshold decisions while the explanatory text stays in normal document flow. Motion values drive transforms and opacity without React state updates on each frame.
+Do not add unsupported clients, credentials, personal history, technical results, or services. Keep Maestro's technical report distinct from the published Influcast research article.
 
-At tablet/mobile sizes, the diagram becomes a static schematic, the chapters stack, and the hero retains subtle scroll-linked depth. Short desktop viewports disable pinning. `prefers-reduced-motion` removes spatial motion, smooth scrolling, and sticky storytelling; all content and links remain available. No scrolling is intercepted, and no infinite animations run.
+## Layout and motion
 
-Design tokens and responsive rules live in `src/styles.css`. The SVG contour surface is deterministic and is generated once at module load, rather than repainted by a canvas animation.
+A shorter introduction leads into a linked work index. Maestro uses a compact three-stage schematic beside normal-flow explanatory text. MetaFlu has a separate research layout with an uncertainty illustration and integrated publication citation. DAIY Lab has a dedicated collaboration section, followed by practical services, a short biography, and direct contact links.
 
-## Publish with GitHub Pages
+Only Maestro pins, at widths of at least 1024px and heights above 720px. Tablet, mobile, short viewports, and reduced-motion mode use a static schematic. Motion values drive transforms and opacity; no per-frame React state or custom scroll interception is used. Substantive text is readable immediately. The decorative hero contour is hidden on narrow screens. Both local fonts are preloaded; the body fallback uses measured metric adjustments to reduce layout shift while fonts load. Reduced motion also disables spatial motion and smooth scrolling.
 
-This checkout is prepared for deployment. **A local build does not publish the website.** No remote changes or publication are performed automatically by local commands.
+The browser suite covers 1920, 1440, 768, 390, and 320px in both motion settings, plus 834px and short-viewport/reflow checks. Screenshots require visual inspection: automated accessibility and overflow checks do not establish complete usability or WCAG conformance.
 
-1. Create or open the GitHub repository **`francescocelino/francescocelino.github.io`**. Use a public repository for free GitHub Pages hosting.
-2. In **Settings → Pages → Build and deployment → Source**, choose **GitHub Actions**. Keep the custom-domain field empty for this release.
-3. If this folder still has no Git metadata and the GitHub repository is empty, initialize it and connect it:
+## Local Git and future deployment
 
-   ```sh
-   git init -b main
-   git remote add origin https://github.com/francescocelino/francescocelino.github.io.git
-   git add .
-   git commit -m "Build AI engineering portfolio"
-   git push -u origin main
-   ```
+The local repository uses `main`. A baseline commit preserves the original implementation, followed by the portfolio revision. `.gitignore` excludes dependencies, build output, QA artifacts, local skills/agent configuration, environment files, and logs. `.editorconfig` and `.gitattributes` establish UTF-8, LF endings, and binary asset handling. The exact dependency lockfile and required public assets are committed.
 
-   If the remote already contains commits, clone it and copy this site's source into that checkout instead. Preserve its history; do not force-push.
+**No remote, push, publication, or account configuration is part of this revision.** Local builds and commits do not deploy the site.
 
-4. Open **Actions → Validate and deploy portfolio** and wait for both `build` and `deploy` to succeed. If the `github-pages` environment requires approval, complete it in GitHub.
-5. Open **https://francescocelino.github.io/** and verify navigation, fonts, social-image URL, and project links. Confirm the Pages environment reports that URL.
+The existing GitHub Pages workflow validates, builds, and tests before deployment. Its official actions are pinned; only the deployment job receives Pages/OIDC write permissions. A future authorized push to `main` or manual workflow run can deploy once a remote repository and Pages environment are configured. Pull requests validate without deploying. Account setup and remote workflow execution remain separate verification steps.
 
-The workflow validates pull requests without deploying them. Pushes to `main` and manual runs install from the lockfile, validate, build, and test the production preview before deploying the `dist/` artifact. Actions are pinned to verified commit SHAs. The build has read-only repository access; only the deployment job receives `pages: write` and `id-token: write`.
+For a future deployment, use the user-site repository `francescocelino/francescocelino.github.io`. Preserve any existing remote history. Keep Vite base `/`; domain migration and DNS changes are separate work.
 
-Vite's `base` is `/` because this is a GitHub **user site**. Do not change it to `/francescocelino.github.io/`. No SPA routing rewrite is needed: navigation uses document anchors.
+## Design references and licensing
 
-### Add a custom domain later
+The revision follows the reviewed [Frontend Design skill](https://github.com/anthropics/skills/tree/main/skills/frontend-design), installed [React Best Practices](https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices), and refreshed [Web Interface Guidelines](https://github.com/vercel-labs/web-interface-guidelines). Motion behavior follows its official [scroll](https://motion.dev/docs/react-scroll-animations) and [reduced-motion](https://motion.dev/docs/react-use-reduced-motion) documentation.
 
-Update `portfolio.siteUrl`, rebuild, and configure the domain and HTTPS in GitHub Pages. Canonical/social URLs, robots.txt, and sitemap.xml derive from that value. Then update the hostname in the sharing-graphic generator and regenerate it. Add DNS records only when the domain migration is explicitly requested. There is no `CNAME` in the initial implementation.
-
-## Quality and evidence
-
-See `docs/validation.md` for actual local results and verification limits. Automated accessibility scans are useful checks, not a certification of WCAG conformance. Lighthouse is a lab measurement; field Core Web Vitals require real visits after deployment.
-
-The browser tests cover five widths (1920, 1440, 768, 390, 320), keyboard focus, anchor navigation, reduced motion, scroll-linked transformations, short viewports, zoom-like reflow, metadata, static assets, contact fallbacks/configuration, future projects, and a JavaScript-disabled fallback. Full cross-device and screen-reader testing remains a separate manual check.
-
-To repeat Lighthouse with Chrome installed:
-
-```sh
-npm run build
-npm run preview
-# In a second terminal:
-npx lighthouse http://127.0.0.1:4173/ --view
-```
-
-## Sources and licensing
-
-The implementation follows the reviewed [Frontend Design skill](https://github.com/anthropics/skills/tree/main/skills/frontend-design), the installed [React Best Practices](https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices), and [Web Interface Guidelines](https://github.com/vercel-labs/web-interface-guidelines). Framework/API choices were checked against [React](https://react.dev/learn/build-a-react-app-from-scratch), [Vite](https://vite.dev/guide/), [Motion](https://motion.dev/docs/react-scroll-animations), [MDN reduced motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion), and [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages) documentation.
-
-[Bynario](https://bynar.io/) informed the emphasis on typography, technical storytelling, and spatial rhythm. Its source, artwork, branding, and layout were not reused. The contour illustration, monogram, and sharing graphic were created for this portfolio. Font licenses are included under `public/fonts/` (SIL Open Font License).
+The original implementation used [Bynario](https://bynar.io/) as a typography/storytelling reference without reusing its source or artwork. The contour, Maestro schematic, forecast illustration, monogram, and sharing graphic are original code-native artwork. Font licenses remain in `public/fonts/`. No new repository-wide license is selected by this revision.

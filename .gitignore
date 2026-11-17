@@ -10,3 +10,7 @@ artifacts/
 skills-lock.json
 .env*
 !.env.example
+
+# Local agent configuration and machine logs
+.codex/
+*.log

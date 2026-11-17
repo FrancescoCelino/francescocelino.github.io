@@ -20,7 +20,22 @@ export default defineConfig({
       transformIndexHtml(html) {
         return html
           .replaceAll('%SITE_URL%', escapeHtml(portfolio.siteUrl))
-          .replaceAll('%DESCRIPTION%', escapeHtml(portfolio.description));
+          .replaceAll('%TITLE%', escapeHtml(portfolio.pageTitle))
+          .replaceAll('%SHARING_ALT%', escapeHtml(portfolio.sharingAlt))
+          .replaceAll('%DESCRIPTION%', escapeHtml(portfolio.description))
+          .replaceAll(
+            '%CONTACT_LINKS%',
+            [
+              portfolio.email
+                ? `<a href="mailto:${escapeHtml(portfolio.email)}">Email Francesco</a>`
+                : '',
+              portfolio.linkedin
+                ? `<a href="${escapeHtml(portfolio.linkedin)}">LinkedIn</a>`
+                : '',
+            ]
+              .filter(Boolean)
+              .join(' · '),
+          );
       },
       generateBundle() {
         this.emitFile({

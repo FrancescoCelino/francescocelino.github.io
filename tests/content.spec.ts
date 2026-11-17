@@ -2,26 +2,49 @@ import { test, expect } from '@playwright/test';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { LazyMotion, domAnimation } from 'motion/react';
-import { App } from '../src/App';
+import { ContactSection } from '../src/components/ContactSection';
 import { ProjectFeature } from '../src/components/ProjectFeature';
 import { portfolio } from '../src/content/portfolio';
 
-test('configured email and LinkedIn replace the contact fallback', () => {
-  const previous = { email: portfolio.email, linkedin: portfolio.linkedin };
-  try {
-    // Synthetic test-only fixtures; never written to portfolio content or build output.
-    portfolio.email = 'engineer@example.com';
-    portfolio.linkedin = 'https://www.linkedin.com/in/example-test-profile/';
-    const html = renderToStaticMarkup(createElement(App));
-    expect(html).toContain('href="mailto:engineer@example.com"');
-    expect(html).toContain(
-      'href="https://www.linkedin.com/in/example-test-profile/"',
+for (const [name, email, linkedin] of [
+  ['both absent', '', ''],
+  ['email only', 'engineer@example.com', ''],
+  ['LinkedIn only', '', 'https://www.linkedin.com/in/example-test-profile/'],
+  [
+    'both configured',
+    'engineer@example.com',
+    'https://www.linkedin.com/in/example-test-profile/',
+  ],
+]) {
+  test(`isolated contact fixture: ${name}`, () => {
+    const before = { email: portfolio.email, linkedin: portfolio.linkedin };
+    const html = renderToStaticMarkup(
+      createElement(ContactSection, {
+        contact: {
+          email: email!,
+          linkedin: linkedin!,
+          github: 'https://github.com/example',
+        },
+      }),
     );
-    expect(html).not.toContain('Find me on GitHub');
-  } finally {
-    Object.assign(portfolio, previous);
-  }
-});
+    if (email) {
+      expect(html).toContain('href="mailto:engineer@example.com"');
+      expect(html).not.toContain('Find me on GitHub');
+    } else {
+      expect(html).not.toContain('mailto:');
+      expect(html).toContain('Find me on GitHub');
+    }
+    if (linkedin)
+      expect(html).toContain(
+        'href="https://www.linkedin.com/in/example-test-profile/"',
+      );
+    else expect(html).not.toContain('linkedin.com');
+    expect(html).not.toContain('href=""');
+    expect({ email: portfolio.email, linkedin: portfolio.linkedin }).toEqual(
+      before,
+    );
+  });
+}
 
 test('a future project renders without Maestro-specific claims or artwork', () => {
   const html = renderToStaticMarkup(

@@ -27,9 +27,6 @@ export function Signal() {
   const rotate = useTransform(scrollYProgress, [0, 1], [-16, 6]);
   return (
     <div className="signal" ref={ref} aria-hidden="true">
-      <span className="signal-coordinate coordinate-top">
-        Research → inference
-      </span>
       <div className="signal-cross cross-top" />
       <m.div
         className="signal-surface"
@@ -56,9 +53,6 @@ export function Signal() {
         </svg>
       </m.div>
       <span className="signal-axis" />
-      <span className="signal-coordinate coordinate-bottom">
-        Complexity, made useful.
-      </span>
       <div className="signal-cross cross-bottom" />
     </div>
   );
