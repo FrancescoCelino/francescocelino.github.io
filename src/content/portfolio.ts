@@ -67,13 +67,13 @@ const daiyLabUrl = 'https://22johngalt.github.io/DIY/';
 export const portfolio = {
   name: 'Francesco Celino',
   role: 'AI engineer focused on LLMs',
-  pageTitle: 'Francesco Celino — AI Engineer Focused on LLMs',
+  pageTitle: 'Francesco Celino | AI Engineer Focused on LLMs',
   sharingLines: [
     'Shroud · Local LLM prototype',
     'MetaFlu · Published forecasting research',
   ],
   sharingAlt:
-    'Francesco Celino — AI engineer focused on LLMs. Shroud, a local LLM prototype, and MetaFlu, forecasting work for Influcast.',
+    'Francesco Celino, AI engineer focused on LLMs. Shroud, a local LLM prototype, and MetaFlu, forecasting work for Influcast.',
   siteUrl: 'https://francescocelino.github.io',
   description:
     'Francesco Celino, AI engineer open to LLM research engineering roles. Explore Shroud, a local LLM prototype, and published forecasting research.',

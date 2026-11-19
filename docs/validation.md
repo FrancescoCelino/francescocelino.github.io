@@ -1,12 +1,16 @@
-# Local validation — 17 November 2026
+# Local validation (17 November 2026)
 
-## CI mobile touch test — 19 November 2026
+## Portfolio and sharing punctuation (19 November 2026)
+
+Formatting, type checking, lint, the production build, and all 41 Playwright tests passed on macOS with Node 24.22.3. Checked the built page title, Open Graph and Twitter metadata, and the sharing image for em dashes.
+
+## CI mobile touch test (19 November 2026)
 
 The GitHub Actions run on `3ec772d` passed the clean install and build. Its mobile test timed out waiting for an exact scroll position after a synthetic swipe. The revised test checks that browser touch events move the page and both figures in each direction, then uses precise viewport positions to check individual frames. Tap interactions with both sliders remain covered.
 
 On macOS with Node 24.22.3 and Chromium 159.0.8154.6, `npm run check`, `npm run build`, eight focused touch runs, and all **41 Playwright tests** passed. The test runs used two workers and zero retries. Validation on GitHub’s Linux runner is pending.
 
-## Rotating loss landscape — 19 November 2026
+## Rotating loss landscape (19 November 2026)
 
 The hero now rotates the perspective projection by 40° as the point descends. The arrow projects the negative gradient at the current point and shrinks near the valley. The caption identifies the figure as an illustrative 2D slice. The desktop descent uses 380 CSS pixels of scroll and the narrow layout uses 67% of viewport height. The desktop figure moves upward more slowly than the page during the descent so the endpoint stays visible, including on a 768 × 720 viewport. Reduced motion shows the complete route from a single viewpoint.
 
@@ -14,7 +18,7 @@ The hero now rotates the perspective projection by 40° as the point descends. T
 
 Chromium profiles of the hero at 1440 × 1000 and 320 × 720 measured a 95th-percentile frame interval of **16.7–16.8 ms** at normal speed and 4× CPU slowdown. The largest recorded hero paint was **1.28 ms**. Lighthouse 13.6.0 scored 100 in each standard category on both local presets. Largest contentful paint was 0.75 s on mobile and 0.38 s on desktop, with zero cumulative layout shift and total blocking time. The captures and reports are in `artifacts/scroll-figures/` and `artifacts/scroll-figures-rotation/`. The tests used Chromium with emulated phone input.
 
-## Figure pacing and manual exploration — 19 November 2026
+## Figure pacing and manual exploration (19 November 2026)
 
 Extended the desktop descent from 180 to 320 CSS pixels of scroll, the narrow descent from 45% to 60% of viewport height, and the forecast from 42% to 62%. The native sliders below the figures let visitors revisit the loss path or any of the five forecast cutoffs from a stationary page. Scrolling resumes control when the scroll-driven progress or forecast week changes. Reduced motion shows the complete static figures.
 
@@ -22,7 +26,7 @@ Extended the desktop descent from 180 to 320 CSS pixels of scroll, the narrow de
 
 The updated Chromium traces measured a 95th-percentile frame interval of **16.7–16.8 ms** on the 1440px and 320px layouts at normal CPU speed and 4× slowdown. Lighthouse 13.6.0 scored 100 for each of performance, accessibility, best practices, and SEO on both local presets. Largest contentful paint was 0.75 s on mobile and 0.38 s on desktop, with zero cumulative layout shift and total blocking time. Reports and traces are in `artifacts/scroll-figures-paced/`, and the desktop and phone figure captures are in `artifacts/scroll-figures/`.
 
-## Scroll-driven portfolio figures — 19 November 2026
+## Scroll-driven portfolio figures (19 November 2026)
 
 The hero shows an illustrative loss surface along two parameter directions. The point and trail follow the same precomputed gradient-descent route. MetaFlu’s chart shows five weekly snapshots of a synthetic series. Each Bayesian forecast uses the observations through its cutoff and shows four prediction weeks with an 80% predictive interval. Reduced motion shows the full descent and the final forecast.
 
@@ -44,7 +48,7 @@ Lighthouse 13.6.0 used its simulated mobile and desktop presets against the same
 
 Reports are in `artifacts/scroll-figures/lighthouse-{mobile,desktop}.report.{html,json}`. These are local Chromium lab measurements with mobile input and CPU slowdown emulated. Physical phones and Safari were outside this run.
 
-## LLM research engineering positioning — 19 November 2026
+## LLM research engineering positioning (19 November 2026)
 
 Shroud leads the hero and Selected Work. The hero shows the master's degree and links directly to the configured email. The MetaFlu paper and forecast links sit above the illustrative chart in reading order. Maestro's backend-processing disclosure appears beside the demo link. Search metadata, the sharing image, and the no-JavaScript introduction use the revised positioning.
 
@@ -66,11 +70,11 @@ These are local lab measurements. Reports are in `artifacts/lighthouse-llm-{mobi
 
 The Maestro demo, frontend, and technical report, the public MetaFlu forecast, GitHub profile, and lab site returned HTTP 200. The [Influcast paper](https://pubmed.ncbi.nlm.nih.gov/39965358/) was checked via PubMed's web record. LinkedIn rejected the automated request, so signed-out profile access remains unverified. The email href was verified without sending a message. The Maestro camera session and Shroud prototype were outside this portfolio validation. The revision is available in the local preview.
 
-## DAIY Lab link — 19 November 2026
+## DAIY Lab link (19 November 2026)
 
 Removed the lab website source link. The build, checks, and all 25 browser tests passed. Verified that **Explore DAIY Lab** is the section’s only link and reviewed it at 1440, 768, and 320 CSS pixels in both motion settings.
 
-## Shroud portfolio entry — 18 November 2026
+## Shroud portfolio entry (18 November 2026)
 
 The follow-up removed the public release announcement and added **Get in touch** and **Visit DAIY Lab**. The build, checks, and all 25 browser tests passed again. The Shroud contact link reached `#contact`, the DAIY Lab URL returned HTTP 200, and the links fit in screenshots at 1440, 768, and 320 CSS pixels in both motion settings. The Lighthouse results below are from the initial entry.
 
@@ -78,19 +82,19 @@ The portfolio describes the local text-masking MVP and the planned cloud-assiste
 
 Lighthouse 13.6.0 with headless Chromium 159 scored **100** in performance, accessibility, best practices, and SEO on both the mobile and desktop presets. Largest contentful paint was 0.8 s on mobile and 0.2 s on desktop, with zero cumulative layout shift and zero total blocking time on both. The experimental Agentic Browsing score was 50 on both. These are localhost lab results. Reports are in `artifacts/lighthouse-shroud-{mobile,desktop}.report.{html,json}`.
 
-## LLM applications copy — 18 November 2026
+## LLM applications copy (18 November 2026)
 
 Replaced the previous example with owner-supplied LLM fine-tuning, agent orchestration, and experiments building local applications with Ollama and LM Studio. `npm run check`, `npm run build`, and all 24 Playwright tests passed. Verified that the revised text is in the production bundle and reviewed the row at 1440, 768, and 320 CSS pixels in both motion settings.
 
-## Technical expertise copy — 18 November 2026
+## Technical expertise copy (18 November 2026)
 
 Checked the stack and examples against project source and commit history. `npm run check`, `npm run build`, and all 24 Playwright tests passed in Chromium using Node 24.22.3. Reviewed the revised descriptions and technology tags at 1440, 768, and 320 CSS pixels in both motion settings against the refreshed [Web Interface Guidelines](https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md). The copy and tags fit at all three widths. The Lighthouse measurements below are from the 17 November build.
 
-## Copy update — 18 November 2026
+## Copy update (18 November 2026)
 
 Regenerated the sharing artwork and verified the production description and image alt text. `npm run check`, `npm run build`, and all 24 Playwright tests passed in Chromium using Node 24.22.3. Reviewed fresh screenshots at 1440, 768, and 320 CSS pixels in both motion settings. The revised copy wrapped within its columns and the schematics remained clear of surrounding text. Reviewed the revised copy and its rendering against the refreshed [Web Interface Guidelines](https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md). The Lighthouse measurements below are from the 17 November build. This update was validated locally.
 
-## Editorial and design revision — 17 November 2026
+## Editorial and design revision (17 November 2026)
 
 The editorial/design revision is implemented and locally validated. **Nothing has been pushed or published.** The local repository contains a baseline commit preserving the previous implementation and the owner's configured contact details. Remote workflow execution and GitHub Pages hosting are separate checks.
 
@@ -155,14 +159,14 @@ Production assets: approximately **108.49 kB gzip JavaScript**, **4.57 kB gzip C
 Reviewed the refreshed [guidelines](https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md), source, and browser output. The final audit found no unresolved material issues in the changed UI:
 
 ```text
-src/App.tsx: pass — one h1, semantic navigation, immediate text, native anchors
-src/components/ProjectFeature.tsx: pass — captions, decorative layers, static and reduced-motion fallbacks
-src/components/ResearchFeature.tsx: pass — integrated citation, illustrative diagram with explanatory caption
-src/components/LabFeature.tsx: pass — clear participation, native destinations
-src/components/ContactSection.tsx: pass — visible contact details, isolated optional-contact behavior
-src/components/Signal.tsx: pass — hidden decorative SVG, motion values
-src/styles.css: pass — focus, contrast, responsive flow, explicit transitions, font stability
-index.html: pass — zoom permitted, local font preload, canonical/social metadata, no-script links
+src/App.tsx: pass (one h1, semantic navigation, immediate text, native anchors)
+src/components/ProjectFeature.tsx: pass (captions, decorative layers, static and reduced-motion fallbacks)
+src/components/ResearchFeature.tsx: pass (integrated citation, illustrative diagram with explanatory caption)
+src/components/LabFeature.tsx: pass (clear participation, native destinations)
+src/components/ContactSection.tsx: pass (visible contact details, isolated optional-contact behavior)
+src/components/Signal.tsx: pass (hidden decorative SVG, motion values)
+src/styles.css: pass (focus, contrast, responsive flow, explicit transitions, font stability)
+index.html: pass (zoom permitted, local font preload, canonical/social metadata, no-script links)
 ```
 
 Sentence-case headings and first-person writing intentionally follow this personal portfolio's brief. Native page scrolling and navigation remain enabled. Automated scans and this review are **not complete WCAG 2.2 AA certification**.

@@ -1,4 +1,4 @@
-# Francesco Celino — AI engineering portfolio
+# Francesco Celino's AI engineering portfolio
 
 A static portfolio built with React, strict TypeScript, Vite, ordinary CSS, and Motion for React. The canonical destination is **https://francescocelino.github.io/**, with Vite base `/`. There is no backend, analytics, camera access, or contact-form service in this portfolio.
 
