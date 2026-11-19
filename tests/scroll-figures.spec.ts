@@ -85,28 +85,66 @@ for (const viewport of [
       await page.goto('/');
       await page.evaluate(() => document.fonts.ready);
 
-      const gesture = async (target: number) => {
+      const scrollToStage = async (target: number) => {
+        if (touch) {
+          await positionPage(page, target);
+          return;
+        }
         const delta = Math.round(
           target - (await page.evaluate(() => window.scrollY)),
         );
-        if (cdp) {
-          await cdp.send('Input.synthesizeScrollGesture', {
-            x: Math.round(width / 2),
-            y: Math.round(height / 2),
-            yDistance: -delta,
-            speed: 700,
-            preventFling: true,
-            gestureSourceType: 'touch',
-          });
-        } else {
-          await page.mouse.move(width / 2, height / 2);
-          await page.mouse.wheel(0, delta);
-        }
+        await page.mouse.move(width / 2, height / 2);
+        await page.mouse.wheel(0, delta);
         await expect
           .poll(async () =>
             Math.abs(target - (await page.evaluate(() => window.scrollY))),
           )
           .toBeLessThan(8);
+      };
+
+      // Touch movement depends on the browser's gesture thresholds. Verify
+      // the direction here and seek precise scroll positions for frame checks.
+      const verifyTouchSwipes = async (readProgress: () => Promise<number>) => {
+        if (!cdp) return;
+        const origin = { x: 12, y: height / 2 }; // Page gutter, outside controls.
+        for (const direction of [1, -1]) {
+          const scrollBefore = await page.evaluate(() => window.scrollY);
+          const progressBefore = await readProgress();
+          await cdp.send('Input.dispatchTouchEvent', {
+            type: 'touchStart',
+            touchPoints: [origin],
+          });
+          try {
+            for (const distance of [24, 48, 72, 96, 120]) {
+              await cdp.send('Input.dispatchTouchEvent', {
+                type: 'touchMove',
+                touchPoints: [
+                  { ...origin, y: origin.y - direction * distance },
+                ],
+              });
+              await page.evaluate(() => new Promise(requestAnimationFrame));
+            }
+            await expect
+              .poll(
+                async () =>
+                  direction *
+                  ((await page.evaluate(() => window.scrollY)) - scrollBefore),
+              )
+              .toBeGreaterThan(30);
+            await expect
+              .poll(
+                async () =>
+                  direction * ((await readProgress()) - progressBefore),
+              )
+              .toBeGreaterThan(0);
+          } finally {
+            // Finish the controlled drag without introducing a fling.
+            await cdp.send('Input.dispatchTouchEvent', {
+              type: 'touchCancel',
+              touchPoints: [],
+            });
+          }
+        }
       };
 
       const scrub = async (input: Locator, key: string, fraction: number) => {
@@ -155,7 +193,7 @@ for (const viewport of [
       const startX = await marker.getAttribute('cx');
       await checkArrow();
       await captureFigure(page, loss, `${width}-loss-start`);
-      await gesture(middle);
+      await scrollToStage(middle);
       await expect.poll(reveal).toBeGreaterThan(0.4);
       await expect.poll(reveal).toBeLessThan(0.6);
       await expect(marker).not.toHaveAttribute('cx', startX!);
@@ -163,32 +201,35 @@ for (const viewport of [
       expect(await mesh.innerHTML()).not.toBe(startMesh);
       await checkArrow();
       await captureFigure(page, loss, `${width}-loss-middle`);
-      await gesture(end);
+      await verifyTouchSwipes(reveal);
+      await scrollToStage(end);
       await expect.poll(reveal).toBeGreaterThan(0.98);
       await expect(track).toHaveAttribute('d', landscapeFrame(1).trail);
       await expect(gradient).toHaveAttribute('d', '');
       await expect(marker).toBeInViewport({ ratio: 0.99 });
       await captureFigure(page, loss, `${width}-loss-end`);
-      await gesture(middle);
+      await scrollToStage(middle);
       await expect.poll(reveal).toBeLessThan(0.6);
-      await gesture(start);
+      await scrollToStage(start);
       await expect.poll(reveal).toBeLessThan(0.02);
       await expect(marker).toHaveAttribute('cx', startX!);
       await expect.poll(() => mesh.innerHTML()).toBe(startMesh);
 
-      // One gesture can cover the entire animation. The slider can revisit
-      // the skipped positions while the page stays put.
-      await gesture(end);
+      // Jump past the intermediate frames, then recover them with the slider.
+      await scrollToStage(end);
       await expect(descentScrubber).toHaveValue('100');
       await scrub(descentScrubber, 'Home', 0);
       await expect.poll(reveal).toBeLessThan(0.02);
       await expect(track).toHaveAttribute('d', '');
       await scrub(descentScrubber, 'End', 1);
       await expect.poll(reveal).toBeGreaterThan(0.98);
-      await gesture(middle);
+      await scrollToStage(middle);
       await expect.poll(reveal).toBeLessThan(0.6);
 
       const forecast = page.locator('.forecast');
+      const forecastScrubber = forecast.getByRole('slider', {
+        name: 'Explore forecast weeks',
+      });
       const forecastTop = await documentTop(page, forecast);
       const axis = forecast.locator('.forecast-axis').first();
       const fixedAxis = await axis.getAttribute('d');
@@ -217,24 +258,27 @@ for (const viewport of [
       const firstMedian = await checkWeek(0);
       await captureFigure(page, forecast, `${width}-forecast-start`);
       for (const week of [1, 2, 3, 4]) {
-        await gesture(centerOfWeek(week));
+        await scrollToStage(centerOfWeek(week));
         expect(await checkWeek(week)).not.toEqual(firstMedian);
-        if (week === 2)
+        if (week === 2) {
           await captureFigure(page, forecast, `${width}-forecast-middle`);
+          await verifyTouchSwipes(() =>
+            forecastScrubber.evaluate(
+              (input: HTMLInputElement) => input.valueAsNumber,
+            ),
+          );
+        }
         if (week === 4)
           await captureFigure(page, forecast, `${width}-forecast-end`);
       }
       for (const week of [3, 2, 1, 0]) {
-        await gesture(centerOfWeek(week));
+        await scrollToStage(centerOfWeek(week));
         const median = await checkWeek(week);
         if (week === 0) expect(median).toEqual(firstMedian);
       }
 
-      await gesture(centerOfWeek(4));
+      await scrollToStage(centerOfWeek(4));
       await checkWeek(4);
-      const forecastScrubber = forecast.getByRole('slider', {
-        name: 'Explore forecast weeks',
-      });
       await scrub(forecastScrubber, 'Home', 0);
       for (const week of [0, 1, 2, 3, 4]) {
         if (week > 0) await scrub(forecastScrubber, 'ArrowRight', week / 4);
@@ -244,7 +288,7 @@ for (const viewport of [
           `Observed through ${cutoffs[week]}`,
         );
       }
-      await gesture(centerOfWeek(3));
+      await scrollToStage(centerOfWeek(3));
       await checkWeek(3);
     } finally {
       await context.close();

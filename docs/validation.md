@@ -1,5 +1,11 @@
 # Local validation — 17 November 2026
 
+## CI mobile touch test — 19 November 2026
+
+The GitHub Actions run on `3ec772d` passed the clean install and build. Its mobile test timed out waiting for an exact scroll position after a synthetic swipe. The revised test checks that browser touch events move the page and both figures in each direction, then uses precise viewport positions to check individual frames. Tap interactions with both sliders remain covered.
+
+On macOS with Node 24.22.3 and Chromium 159.0.8154.6, `npm run check`, `npm run build`, eight focused touch runs, and all **41 Playwright tests** passed. The test runs used two workers and zero retries. Validation on GitHub’s Linux runner is pending.
+
 ## Rotating loss landscape — 19 November 2026
 
 The hero now rotates the perspective projection by 40° as the point descends. The arrow projects the negative gradient at the current point and shrinks near the valley. The caption identifies the figure as an illustrative 2D slice. The desktop descent uses 380 CSS pixels of scroll and the narrow layout uses 67% of viewport height. The desktop figure moves upward more slowly than the page during the descent so the endpoint stays visible, including on a 768 × 720 viewport. Reduced motion shows the complete route from a single viewpoint.
