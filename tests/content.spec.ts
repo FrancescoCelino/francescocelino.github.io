@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { LazyMotion, domAnimation } from 'motion/react';
+import { Hero } from '../src/App';
 import { ContactSection } from '../src/components/ContactSection';
 import { ProjectFeature } from '../src/components/ProjectFeature';
 import { portfolio } from '../src/content/portfolio';
@@ -46,6 +47,12 @@ for (const [name, email, linkedin] of [
   });
 }
 
+test('the hero links to contact when email is absent', () => {
+  const html = renderToStaticMarkup(createElement(Hero, { email: '' }));
+  expect(html).toContain('href="#contact">Contact</a>');
+  expect(html).not.toContain('mailto:');
+});
+
 test('a future project renders without Maestro-specific claims or artwork', () => {
   const html = renderToStaticMarkup(
     createElement(LazyMotion, {
@@ -64,6 +71,7 @@ test('a future project renders without Maestro-specific claims or artwork', () =
     }),
   );
   expect(html).toContain('Synthetic project fixture');
+  expect(html).toContain('Engineering project');
   expect(html).not.toContain('Maestro');
   expect(html).not.toContain('18');
   expect(html).not.toContain('privacy-note');

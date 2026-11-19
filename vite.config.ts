@@ -23,6 +23,9 @@ export default defineConfig({
           .replaceAll('%TITLE%', escapeHtml(portfolio.pageTitle))
           .replaceAll('%SHARING_ALT%', escapeHtml(portfolio.sharingAlt))
           .replaceAll('%DESCRIPTION%', escapeHtml(portfolio.description))
+          .replaceAll('%HERO%', escapeHtml(portfolio.hero))
+          .replaceAll('%EDUCATION%', escapeHtml(portfolio.education))
+          .replaceAll('%AVAILABILITY%', escapeHtml(portfolio.availability))
           .replaceAll(
             '%CONTACT_LINKS%',
             [

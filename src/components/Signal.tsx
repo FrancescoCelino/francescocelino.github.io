@@ -1,59 +1,162 @@
-import { useRef } from 'react';
-import { m, useReducedMotion, useScroll, useTransform } from 'motion/react';
+import { useRef, type RefObject } from 'react';
+import {
+  m,
+  useMotionValue,
+  useMotionValueEvent,
+  useScroll,
+  useTransform,
+  type MotionValue,
+} from 'motion/react';
+import { portfolio } from '../content/portfolio';
+import { landscapeFrame } from './lossLandscape';
+import { useMediaQuery } from './useMediaQuery';
 
-// A deterministic parametric surface: no canvas, WebGL, video, or per-frame React state.
-const contours = Array.from({ length: 27 }, (_, ring) => {
-  const depth = ring / 26;
-  const points = Array.from({ length: 145 }, (_, point) => {
-    const angle = (point / 144) * Math.PI * 2;
-    const radius = 117 + depth * 79;
-    const wave = Math.cos(angle * 3 + depth * 2.7) * (9 + depth * 16);
-    const x = 280 + Math.cos(angle) * (radius + wave);
-    const y =
-      266 + Math.sin(angle) * (radius * 0.59 + wave) + (depth - 0.5) * 65;
-    return `${point === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`;
-  }).join(' ');
-  return `${points} Z`;
-});
+const labels = portfolio.lossLandscape;
+const completeDescent = landscapeFrame(1);
+type Frame = ReturnType<typeof landscapeFrame>;
+type DrawnFrame = {
+  [Key in keyof Frame]: Frame[Key] | MotionValue<Frame[Key]>;
+};
+
+function LandscapePlot({ frame }: { frame: DrawnFrame }) {
+  return (
+    <svg viewBox="0 0 360 258" fill="none" aria-hidden="true">
+      <m.path className="loss-floor" d={frame.floor} />
+      <m.path className="loss-axis" d={frame.axes} />
+      <g className="loss-mesh">
+        <m.path d={frame.farGrid} opacity={0.5} />
+        <m.path d={frame.nearGrid} opacity={0.79} />
+        <m.path className="loss-rim" d={frame.rim} />
+      </g>
+      <m.path className="loss-route" d={frame.trail} />
+      <m.circle
+        className="loss-start"
+        cx={frame.startX}
+        cy={frame.startY}
+        r="4.7"
+      />
+      <m.path className="loss-gradient" d={frame.gradient} />
+      <m.circle
+        className="loss-current"
+        cx={frame.markerX}
+        cy={frame.markerY}
+        r="4.7"
+      />
+      <g className="figure-axis-label">
+        <m.text x={frame.lossX} y={frame.lossY} textAnchor="middle">
+          {labels.loss}
+        </m.text>
+        <m.text x={frame.direction1X} y={frame.direction1Y} textAnchor="middle">
+          {labels.direction1}
+        </m.text>
+        <m.text x={frame.direction2X} y={frame.direction2Y} textAnchor="middle">
+          {labels.direction2}
+        </m.text>
+      </g>
+    </svg>
+  );
+}
+
+function RotatingLandscape({ progress }: { progress: MotionValue<number> }) {
+  const scene = useTransform(progress, landscapeFrame);
+  const frame = {
+    floor: useTransform(scene, (value) => value.floor),
+    axes: useTransform(scene, (value) => value.axes),
+    farGrid: useTransform(scene, (value) => value.farGrid),
+    nearGrid: useTransform(scene, (value) => value.nearGrid),
+    rim: useTransform(scene, (value) => value.rim),
+    trail: useTransform(scene, (value) => value.trail),
+    gradient: useTransform(scene, (value) => value.gradient),
+    startX: useTransform(scene, (value) => value.startX),
+    startY: useTransform(scene, (value) => value.startY),
+    markerX: useTransform(scene, (value) => value.markerX),
+    markerY: useTransform(scene, (value) => value.markerY),
+    lossX: useTransform(scene, (value) => value.lossX),
+    lossY: useTransform(scene, (value) => value.lossY),
+    direction1X: useTransform(scene, (value) => value.direction1X),
+    direction1Y: useTransform(scene, (value) => value.direction1Y),
+    direction2X: useTransform(scene, (value) => value.direction2X),
+    direction2Y: useTransform(scene, (value) => value.direction2Y),
+  };
+  return <LandscapePlot frame={frame} />;
+}
+
+function DescentScrubber({ progress }: { progress: MotionValue<number> }) {
+  const input = useRef<HTMLInputElement>(null);
+  useMotionValueEvent(progress, 'change', (value) => {
+    if (input.current) input.current.value = String(Math.round(value * 100));
+  });
+
+  return (
+    <label className="figure-scrubber">
+      {labels.scrubber}
+      <input
+        ref={input}
+        type="range"
+        min={0}
+        max={100}
+        defaultValue={0}
+        onInput={(event) =>
+          progress.set(event.currentTarget.valueAsNumber / 100)
+        }
+      />
+    </label>
+  );
+}
+
+function LossFigure({
+  target,
+  progress,
+  shift,
+}: {
+  target?: RefObject<HTMLElement | null>;
+  progress?: MotionValue<number>;
+  shift?: MotionValue<number>;
+}) {
+  return (
+    <m.figure
+      className={shift ? 'signal signal-travel' : 'signal'}
+      ref={target}
+      style={shift ? { y: shift } : undefined}
+    >
+      <div className="figure-heading">{labels.title}</div>
+      {progress ? (
+        <RotatingLandscape progress={progress} />
+      ) : (
+        <LandscapePlot frame={completeDescent} />
+      )}
+      {progress ? <DescentScrubber progress={progress} /> : null}
+      <figcaption>{labels.caption}</figcaption>
+    </m.figure>
+  );
+}
+
+function ScrollingLoss({ mobile }: { mobile: boolean }) {
+  const target = useRef<HTMLElement>(null);
+  const { scrollY, scrollYProgress } = useScroll(
+    mobile ? { target, offset: ['start 72%', 'start 5%'] } : {},
+  );
+  const desktopProgress = useTransform(scrollY, [0, 380], [0, 1]);
+  const desktopShift = useTransform(desktopProgress, [0, 1], [0, 135]);
+  const scrollProgress = mobile ? scrollYProgress : desktopProgress;
+  const progress = useMotionValue(0);
+  useMotionValueEvent(scrollProgress, 'change', (value) => progress.set(value));
+
+  return (
+    <LossFigure
+      target={target}
+      progress={progress}
+      shift={mobile ? undefined : desktopShift}
+    />
+  );
+}
 
 export function Signal() {
-  const ref = useRef<HTMLDivElement>(null);
-  const reduced = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start start', 'end start'],
-  });
-  const y = useTransform(scrollYProgress, [0, 1], [0, 80]);
-  const rotate = useTransform(scrollYProgress, [0, 1], [-16, 6]);
-  return (
-    <div className="signal" ref={ref} aria-hidden="true">
-      <div className="signal-cross cross-top" />
-      <m.div
-        className="signal-surface"
-        style={reduced ? undefined : { y, rotate }}
-      >
-        <svg viewBox="0 0 560 540" fill="none">
-          {contours.map((path, index) => (
-            <path
-              key={index}
-              d={path}
-              stroke={index % 6 === 0 ? '#e7a57b' : '#8098ad'}
-              strokeOpacity={index % 6 === 0 ? 0.95 : 0.32 + index / 110}
-              strokeWidth={index % 6 === 0 ? 1.2 : 0.7}
-            />
-          ))}
-          <ellipse
-            cx="280"
-            cy="266"
-            rx="42"
-            ry="23"
-            stroke="#e7a57b"
-            strokeWidth="0.8"
-          />
-        </svg>
-      </m.div>
-      <span className="signal-axis" />
-      <div className="signal-cross cross-bottom" />
-    </div>
+  const reduced = useMediaQuery('(prefers-reduced-motion: reduce)');
+  const mobile = useMediaQuery('(max-width: 700px)');
+  return reduced ? (
+    <LossFigure />
+  ) : (
+    <ScrollingLoss mobile={mobile} key={mobile ? 'mobile' : 'desktop'} />
   );
 }

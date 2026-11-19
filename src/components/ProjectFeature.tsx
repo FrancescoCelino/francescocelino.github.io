@@ -125,13 +125,37 @@ function Pipeline({
   );
 }
 
-export function ProjectFeature({ project }: { project: Project }) {
+function ProjectStory({ project }: { project: Project }) {
   const ref = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start center', 'end center'],
   });
+  return (
+    <div
+      className={`project-story${reduced ? ' motion-reduced' : ''}`}
+      ref={ref}
+    >
+      <Pipeline progress={scrollYProgress} project={project} />
+      <div className="story-chapters">
+        {project.stages.map((stage, index) => (
+          <section className="story-chapter" key={stage.title}>
+            <span className="chapter-number" aria-hidden="true">
+              0{index + 1}
+            </span>
+            <div>
+              <h4>{stage.title}</h4>
+              <p>{stage.description}</p>
+            </div>
+          </section>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function ProjectFeature({ project }: { project: Project }) {
   return (
     <article
       id={project.id}
@@ -140,7 +164,9 @@ export function ProjectFeature({ project }: { project: Project }) {
     >
       <div className="project-intro">
         <div>
-          <p className="section-label">{portfolio.projectLabels.feature}</p>
+          <p className="section-label">
+            {project.status ?? portfolio.projectLabels.feature}
+          </p>
           <h3 id={`${project.id}-title`}>
             {project.title}
             <span className="project-period">.</span>
@@ -149,51 +175,38 @@ export function ProjectFeature({ project }: { project: Project }) {
         </div>
         <div className="project-summary">
           <p>{project.summary}</p>
+          {project.vision && (
+            <div className="project-vision">
+              <h4>{portfolio.projectLabels.vision}</h4>
+              <p>{project.vision}</p>
+            </div>
+          )}
           <ul className="tags" aria-label="Project disciplines">
             {project.tags.map((tag) => (
               <li key={tag}>{tag}</li>
             ))}
           </ul>
-          <div className="project-links">
-            {project.links.map((link) => (
-              <a key={link.href} className="text-link" href={link.href}>
-                {link.label}
-                <span aria-hidden="true">↗</span>
-              </a>
-            ))}
-          </div>
+          {project.privacyNote ? (
+            <div className="privacy-note">
+              <h4>{portfolio.projectLabels.privacy}</h4>
+              <p>{project.privacyNote}</p>
+            </div>
+          ) : null}
+          {project.links.length > 0 && (
+            <div className="project-links">
+              {project.links.map((link) => (
+                <a key={link.href} className="text-link" href={link.href}>
+                  {link.label}
+                  <span aria-hidden="true">
+                    {link.href.startsWith('#') ? '↘' : '↗'}
+                  </span>
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       </div>
-      <div
-        className={`project-story${reduced ? ' motion-reduced' : ''}`}
-        ref={ref}
-      >
-        <Pipeline progress={scrollYProgress} project={project} />
-        <div className="story-chapters">
-          {project.stages.map((stage, index) => (
-            <section className="story-chapter" key={stage.title}>
-              <span className="chapter-number" aria-hidden="true">
-                0{index + 1}
-              </span>
-              <div>
-                <h4>{stage.title}</h4>
-                <p>{stage.description}</p>
-              </div>
-            </section>
-          ))}
-        </div>
-      </div>
-      {project.privacyNote ? (
-        <aside className="privacy-note">
-          <span className="privacy-symbol" aria-hidden="true">
-            ↳
-          </span>
-          <div>
-            <h4>{portfolio.projectLabels.privacy}</h4>
-            <p>{project.privacyNote}</p>
-          </div>
-        </aside>
-      ) : null}
+      {project.stages.length > 0 && <ProjectStory project={project} />}
     </article>
   );
 }

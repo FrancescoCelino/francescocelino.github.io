@@ -1,5 +1,91 @@
 # Local validation — 17 November 2026
 
+## Rotating loss landscape — 19 November 2026
+
+The hero now rotates the perspective projection by 40° as the point descends. The arrow projects the negative gradient at the current point and shrinks near the valley. The caption identifies the figure as an illustrative 2D slice. The desktop descent uses 380 CSS pixels of scroll and the narrow layout uses 67% of viewport height. The desktop figure moves upward more slowly than the page during the descent so the endpoint stays visible, including on a 768 × 720 viewport. Reduced motion shows the complete route from a single viewpoint.
+
+`npm run check`, `npm run build`, and all **41 Playwright tests** passed on Node 24.22.3 and Chromium 159.0.8154.6. Verified reversible camera rotation, a gradient arrow attached to the point, touch and keyboard scrubbing, the desktop endpoint clearance, the 320 × 720 hero actions, and the existing Maestro pinning checks. Reviewed figure screenshots at desktop, tablet, and phone widths in both motion settings using the refreshed [Web Interface Guidelines](https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md).
+
+Chromium profiles of the hero at 1440 × 1000 and 320 × 720 measured a 95th-percentile frame interval of **16.7–16.8 ms** at normal speed and 4× CPU slowdown. The largest recorded hero paint was **1.28 ms**. Lighthouse 13.6.0 scored 100 in each standard category on both local presets. Largest contentful paint was 0.75 s on mobile and 0.38 s on desktop, with zero cumulative layout shift and total blocking time. The captures and reports are in `artifacts/scroll-figures/` and `artifacts/scroll-figures-rotation/`. The tests used Chromium with emulated phone input.
+
+## Figure pacing and manual exploration — 19 November 2026
+
+Extended the desktop descent from 180 to 320 CSS pixels of scroll, the narrow descent from 45% to 60% of viewport height, and the forecast from 42% to 62%. The native sliders below the figures let visitors revisit the loss path or any of the five forecast cutoffs from a stationary page. Scrolling resumes control when the scroll-driven progress or forecast week changes. Reduced motion shows the complete static figures.
+
+`npm run check`, `npm run build`, and all **40 Playwright tests** passed on Node 24.22.3 and Chromium 159.0.8154.6. Desktop wheel and emulated touch tests crossed each sequence in a single gesture, then revisited skipped positions with the sliders using keyboard and touch. The tests verified that the page held its position during manual exploration and that scroll-driven updates resumed afterward. Reviewed desktop, tablet, and 320px screenshots in both motion settings against the refreshed [Web Interface Guidelines](https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md).
+
+The updated Chromium traces measured a 95th-percentile frame interval of **16.7–16.8 ms** on the 1440px and 320px layouts at normal CPU speed and 4× slowdown. Lighthouse 13.6.0 scored 100 for each of performance, accessibility, best practices, and SEO on both local presets. Largest contentful paint was 0.75 s on mobile and 0.38 s on desktop, with zero cumulative layout shift and total blocking time. Reports and traces are in `artifacts/scroll-figures-paced/`, and the desktop and phone figure captures are in `artifacts/scroll-figures/`.
+
+## Scroll-driven portfolio figures — 19 November 2026
+
+The hero shows an illustrative loss surface along two parameter directions. The point and trail follow the same precomputed gradient-descent route. MetaFlu’s chart shows five weekly snapshots of a synthetic series. Each Bayesian forecast uses the observations through its cutoff and shows four prediction weeks with an 80% predictive interval. Reduced motion shows the full descent and the final forecast.
+
+Validated the localhost production build on macOS 15.7.8 ARM64 with Node 24.22.3 and Chromium 159.0.8154.6. `npm ci --prefer-offline --no-audit`, `npm run check`, `npm run build`, and all **40 Playwright tests** passed. The tests exercised reversible desktop wheel and emulated mobile touch scrolling, paused snapshots in reduced motion, weekly cutoff isolation, fixed axes, the 320 × 720 hero actions, keyboard navigation, and the existing Maestro pinning. Across the responsive suite there were no clipped SVG labels, horizontal overflow, console errors, or axe A/AA violations.
+
+Reviewed desktop, tablet, and narrow phone captures in both motion modes. The final audit used the refreshed [Web Interface Guidelines](https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md). The SVG labels fit inside their view boxes, the forecast legend wraps on phones, and visible figcaptions explain both visuals. The trail changes the SVG stroke to draw the route, so its paint cost was included in the scrolling trace. Screenshots are in `artifacts/scroll-figures/` and the first-screen phone capture is `artifacts/llm-hero-320-no-preference.png`.
+
+For each figure, Chromium recorded a 1.2-second forward sweep and a 1.2-second reverse sweep at both 1440 × 1000 and 320 × 720. At normal speed and 4× CPU slowdown, the 95th percentile frame interval was **16.7–16.8 ms** across the eight samples. No sampled interval exceeded 33.5 ms. The largest recorded individual paint was **1.13 ms** during the throttled narrow hero sweep. The production bundle added **1.57 kB gzip JavaScript** and **0.42 kB gzip CSS** compared with the starting checkout. Traces and timings are in `artifacts/scroll-figures/scroll-*.trace.json` and `artifacts/scroll-figures/scroll-timing.json`.
+
+Lighthouse 13.6.0 used its simulated mobile and desktop presets against the same preview.
+
+| Metric                                          | Mobile   | Desktop  |
+| ----------------------------------------------- | -------- | -------- |
+| Performance, accessibility, best practices, SEO | 100 each | 100 each |
+| Largest contentful paint                        | 0.75 s   | 0.20 s   |
+| Cumulative layout shift                         | 0        | 0        |
+| Total blocking time                             | 0 ms     | 0 ms     |
+| Experimental Agentic Browsing                   | 50       | 50       |
+
+Reports are in `artifacts/scroll-figures/lighthouse-{mobile,desktop}.report.{html,json}`. These are local Chromium lab measurements with mobile input and CPU slowdown emulated. Physical phones and Safari were outside this run.
+
+## LLM research engineering positioning — 19 November 2026
+
+Shroud leads the hero and Selected Work. The hero shows the master's degree and links directly to the configured email. The MetaFlu paper and forecast links sit above the illustrative chart in reading order. Maestro's backend-processing disclosure appears beside the demo link. Search metadata, the sharing image, and the no-JavaScript introduction use the revised positioning.
+
+Validated the production preview at `http://127.0.0.1:4173/` on macOS ARM64 with Node 24.22.3 and Chromium 159.0.8154.6. The exact lockfile installed with `npm ci --prefer-offline --no-audit`. Asset generation, `npm run check`, and `npm run build` passed. All **34 Playwright tests** passed, including direct arrivals at `#shroud`, `#research`, and `#contact` in both motion settings, the isolated hero fallback for missing email, and the existing keyboard and pinning checks.
+
+Reviewed screenshots at 1440, 768, 390, and 320 CSS pixels in both motion settings and all three Maestro animation stages. At 320 × 720, the role, degree, availability, and both hero actions fit on the first screen. No overflow, console errors, or axe A/AA violations appeared in the responsive suite. The changed UI was reviewed against the refreshed [Web Interface Guidelines](https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md). These checks cover the tested browser and layout cases.
+
+Lighthouse 13.6.0 ran on the same localhost build using simulated mobile throttling and the desktop preset.
+
+| Metric                                          | Mobile   | Desktop  |
+| ----------------------------------------------- | -------- | -------- |
+| Performance, accessibility, best practices, SEO | 100 each | 100 each |
+| Largest contentful paint                        | 0.75 s   | 0.20 s   |
+| Cumulative layout shift                         | 0        | 0        |
+| Total blocking time                             | 0 ms     | 0 ms     |
+| Experimental Agentic Browsing                   | 50       | 50       |
+
+These are local lab measurements. Reports are in `artifacts/lighthouse-llm-{mobile,desktop}.report.{html,json}`. Narrow first-screen captures are in `artifacts/llm-hero-320-{reduce,no-preference}.png`.
+
+The Maestro demo, frontend, and technical report, the public MetaFlu forecast, GitHub profile, and lab site returned HTTP 200. The [Influcast paper](https://pubmed.ncbi.nlm.nih.gov/39965358/) was checked via PubMed's web record. LinkedIn rejected the automated request, so signed-out profile access remains unverified. The email href was verified without sending a message. The Maestro camera session and Shroud prototype were outside this portfolio validation. The revision is available in the local preview.
+
+## DAIY Lab link — 19 November 2026
+
+Removed the lab website source link. The build, checks, and all 25 browser tests passed. Verified that **Explore DAIY Lab** is the section’s only link and reviewed it at 1440, 768, and 320 CSS pixels in both motion settings.
+
+## Shroud portfolio entry — 18 November 2026
+
+The follow-up removed the public release announcement and added **Get in touch** and **Visit DAIY Lab**. The build, checks, and all 25 browser tests passed again. The Shroud contact link reached `#contact`, the DAIY Lab URL returned HTTP 200, and the links fit in screenshots at 1440, 768, and 320 CSS pixels in both motion settings. The Lighthouse results below are from the initial entry.
+
+The portfolio describes the local text-masking MVP and the planned cloud-assisted workspace. Verified that the Shroud shortcut lands on its own entry after Maestro, with collaboration credit and release status. The exact lockfile installed with `npm ci --prefer-offline --no-audit` after an offline attempt could not resolve optional peer metadata. `npm run check`, `npm run build`, and all **25 Playwright tests** passed on macOS ARM64 with Node 24.22.3. The responsive suite detected zero axe A/AA violations, horizontal overflow, or console errors. Reviewed the updated navigation and project entry at 1440, 768, and 320 CSS pixels in both motion settings, plus the three Maestro scroll stages. Reviewed the changed UI against the refreshed [Web Interface Guidelines](https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md).
+
+Lighthouse 13.6.0 with headless Chromium 159 scored **100** in performance, accessibility, best practices, and SEO on both the mobile and desktop presets. Largest contentful paint was 0.8 s on mobile and 0.2 s on desktop, with zero cumulative layout shift and zero total blocking time on both. The experimental Agentic Browsing score was 50 on both. These are localhost lab results. Reports are in `artifacts/lighthouse-shroud-{mobile,desktop}.report.{html,json}`.
+
+## LLM applications copy — 18 November 2026
+
+Replaced the previous example with owner-supplied LLM fine-tuning, agent orchestration, and experiments building local applications with Ollama and LM Studio. `npm run check`, `npm run build`, and all 24 Playwright tests passed. Verified that the revised text is in the production bundle and reviewed the row at 1440, 768, and 320 CSS pixels in both motion settings.
+
+## Technical expertise copy — 18 November 2026
+
+Checked the stack and examples against project source and commit history. `npm run check`, `npm run build`, and all 24 Playwright tests passed in Chromium using Node 24.22.3. Reviewed the revised descriptions and technology tags at 1440, 768, and 320 CSS pixels in both motion settings against the refreshed [Web Interface Guidelines](https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md). The copy and tags fit at all three widths. The Lighthouse measurements below are from the 17 November build.
+
+## Copy update — 18 November 2026
+
+Regenerated the sharing artwork and verified the production description and image alt text. `npm run check`, `npm run build`, and all 24 Playwright tests passed in Chromium using Node 24.22.3. Reviewed fresh screenshots at 1440, 768, and 320 CSS pixels in both motion settings. The revised copy wrapped within its columns and the schematics remained clear of surrounding text. Reviewed the revised copy and its rendering against the refreshed [Web Interface Guidelines](https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md). The Lighthouse measurements below are from the 17 November build. This update was validated locally.
+
+## Editorial and design revision — 17 November 2026
+
 The editorial/design revision is implemented and locally validated. **Nothing has been pushed or published.** The local repository contains a baseline commit preserving the previous implementation and the owner's configured contact details. Remote workflow execution and GitHub Pages hosting are separate checks.
 
 ## Environment and commands

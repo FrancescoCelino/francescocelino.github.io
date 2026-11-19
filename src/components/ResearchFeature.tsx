@@ -1,57 +1,8 @@
 import { portfolio, research } from '../content/portfolio';
-
-function ForecastSchematic() {
-  return (
-    <figure className="forecast">
-      <div className="forecast-labels" aria-hidden="true">
-        <span>{research.schematic.observed}</span>
-        <span>{research.schematic.forecast}</span>
-      </div>
-      <svg viewBox="0 0 600 310" fill="none" aria-hidden="true">
-        <path
-          d="M25 260H575M25 170H575M25 80H575"
-          stroke="currentColor"
-          opacity=".15"
-        />
-        <path
-          d="M25 230C60 236 65 195 95 207S135 242 165 180S200 110 230 142S265 160 290 118"
-          stroke="#b1bdc8"
-          strokeWidth="2.5"
-        />
-        <path
-          d="M290 118C360 65 420 38 575 25V264C440 217 365 165 290 118Z"
-          fill="#e7a57b"
-          opacity=".1"
-        />
-        <path
-          d="M290 118C365 80 450 74 575 85V225C460 195 375 156 290 118Z"
-          fill="#e7a57b"
-          opacity=".16"
-        />
-        <path
-          d="M290 118C380 90 460 122 575 155"
-          stroke="#e7a57b"
-          strokeWidth="2.5"
-          strokeDasharray="6 7"
-        />
-        <path
-          d="M290 30V275"
-          stroke="currentColor"
-          opacity=".3"
-          strokeDasharray="3 7"
-        />
-        <circle cx="290" cy="118" r="6" fill="#e7a57b" />
-      </svg>
-      <p className="forecast-model" aria-hidden="true">
-        {research.schematic.model}
-      </p>
-      <figcaption>{research.schematic.caption}</figcaption>
-    </figure>
-  );
-}
+import { ForecastSchematic } from './ForecastSchematic';
 
 export function ResearchFeature() {
-  const { publication } = research;
+  const { publication, forecastLink } = research;
   return (
     <section
       id="research"
@@ -72,20 +23,23 @@ export function ResearchFeature() {
               <li key={method}>{method}</li>
             ))}
           </ul>
+          <div className="publication">
+            <p className="publication-meta">
+              {publication.journal} ({publication.year}) ·{' '}
+              {publication.authorship}
+            </p>
+            <p className="publication-title">{publication.title}</p>
+            <div className="project-links">
+              {[publication, forecastLink].map(({ label, href }) => (
+                <a key={href} href={href} className="text-link">
+                  {label}
+                  <span aria-hidden="true">↗</span>
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
         <ForecastSchematic />
-      </div>
-      <div className="publication">
-        <p className="publication-meta">
-          <span>
-            {publication.journal} ({publication.year})
-          </span>
-          <span>{publication.authorship}</span>
-        </p>
-        <a href={publication.href} className="publication-link">
-          <h3>{publication.title}</h3>
-          <span aria-hidden="true">↗</span>
-        </a>
       </div>
     </section>
   );

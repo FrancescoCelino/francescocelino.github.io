@@ -1,3 +1,4 @@
+import { useLayoutEffect } from 'react';
 import { LazyMotion, domAnimation, MotionConfig } from 'motion/react';
 import { portfolio, projects } from './content/portfolio';
 import { Signal } from './components/Signal';
@@ -6,7 +7,7 @@ import { ResearchFeature } from './components/ResearchFeature';
 import { LabFeature } from './components/LabFeature';
 import { ContactSection } from './components/ContactSection';
 
-function Hero() {
+export function Hero({ email }: { email: string }) {
   return (
     <section className="hero" aria-labelledby="hero-title">
       <div className="hero-copy">
@@ -14,22 +15,26 @@ function Hero() {
           {portfolio.name} <span>{portfolio.role}</span>
         </h1>
         <p className="hero-description">{portfolio.hero}</p>
-        <div className="hero-actions">
-          <a className="button button-primary" href="#work">
-            {portfolio.actions.work}
-            <span aria-hidden="true">↘</span>
-          </a>
-          <a className="button button-quiet" href="#contact">
-            {portfolio.actions.contact}
-          </a>
-        </div>
+        <p className="hero-education">{portfolio.education}</p>
         <p className="availability">
           <span aria-hidden="true" />
           {portfolio.availability}
         </p>
+        <div className="hero-actions">
+          <a className="button button-primary" href="#shroud">
+            {portfolio.actions.shroud}
+            <span aria-hidden="true">↘</span>
+          </a>
+          <a
+            className="button button-quiet"
+            href={email ? `mailto:${email}` : '#contact'}
+          >
+            {email ? portfolio.actions.email : portfolio.headings.contact}
+          </a>
+        </div>
       </div>
       <Signal />
-      <nav className="work-index" aria-label="Featured work and collaboration">
+      <nav className="work-index" aria-label="Featured work">
         {portfolio.workIndex.map((item) => (
           <a href={item.href} key={item.href}>
             <span>{item.label}</span>
@@ -73,6 +78,12 @@ function Expertise() {
 }
 
 export function App() {
+  useLayoutEffect(() => {
+    // The initial fragment can arrive before the client-rendered landmark exists.
+    const target = document.getElementById(window.location.hash.slice(1));
+    target?.scrollIntoView({ block: 'start', behavior: 'instant' });
+  }, []);
+
   return (
     <LazyMotion features={domAnimation} strict>
       <MotionConfig reducedMotion="user">
@@ -97,7 +108,7 @@ export function App() {
           </nav>
         </header>
         <main id="main">
-          <Hero />
+          <Hero email={portfolio.email} />
           <section
             id="work"
             className="work section-shell"
@@ -112,8 +123,8 @@ export function App() {
             ))}
           </section>
           <ResearchFeature />
-          <LabFeature />
           <Expertise />
+          <LabFeature />
           <section
             id="about"
             className="about section-shell"

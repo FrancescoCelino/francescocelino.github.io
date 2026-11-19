@@ -13,7 +13,9 @@ export interface Project {
   id: string;
   title: string;
   category: string;
+  status?: string;
   summary: string;
+  vision?: string;
   tags: readonly string[];
   visual?: 'age-verification';
   links: PortfolioLink[];
@@ -30,15 +32,22 @@ export interface ResearchWork {
   methods: readonly string[];
   publication: {
     title: string;
+    label: string;
     journal: string;
     year: number;
     authorship: string;
     href: string;
   };
+  forecastLink: PortfolioLink;
   schematic: {
+    title: string;
+    context: string;
+    cutoff: string;
+    valueAxis: string;
     observed: string;
-    model: string;
-    forecast: string;
+    median: string;
+    interval: string;
+    scrubber: string;
     caption: string;
   };
 }
@@ -52,25 +61,31 @@ export interface LabParticipation {
   links: readonly PortfolioLink[];
 }
 
+const daiyLabUrl = 'https://22johngalt.github.io/DIY/';
+
 // These contact details are public. Empty fields are omitted by the UI.
 export const portfolio = {
   name: 'Francesco Celino',
-  role: 'AI engineer',
-  pageTitle: 'Francesco Celino — AI Engineer',
-  sharingLines: ['Computer vision, forecasting,', 'and model integration'],
+  role: 'AI engineer focused on LLMs',
+  pageTitle: 'Francesco Celino — AI Engineer Focused on LLMs',
+  sharingLines: [
+    'Shroud · Local LLM prototype',
+    'MetaFlu · Published forecasting research',
+  ],
   sharingAlt:
-    'Francesco Celino — AI engineer. Computer vision, forecasting, and model integration.',
+    'Francesco Celino — AI engineer focused on LLMs. Shroud, a local LLM prototype, and MetaFlu, forecasting work for Influcast.',
   siteUrl: 'https://francescocelino.github.io',
   description:
-    'Francesco Celino, AI engineer. Explore work in computer vision, Bayesian forecasting, and model integration, published research, and participation in DAIY Lab.',
+    'Francesco Celino, AI engineer open to LLM research engineering roles. Explore Shroud, a local LLM prototype, and published forecasting research.',
   email: 'celinofrancesco849@gmail.com',
   linkedin: 'https://www.linkedin.com/in/francesco-celino-a45821257/',
   github: 'https://github.com/francescocelino',
   availability:
-    'Open to freelance, contract & suitable employment opportunities',
-  hero: 'I work on computer vision, statistical forecasting, and connecting models to applications. Here’s a closer look at what I’ve been working on, independently and with others.',
+    'Open to LLM research engineering and applied ML roles, contracts, and freelance work.',
+  hero: 'With DAIY Lab, I built Shroud, a macOS prototype that uses a fine-tuned open LLM to flag sensitive text for human review.',
+  education: 'Master’s in Mathematical Engineering, Politecnico di Torino',
   about:
-    'I’m Francesco, an AI engineer with experience in computer vision and statistical modeling. Alongside Maestro, I developed MetaFlu and co-authored research on influenza forecasting. I’m also part of DAIY Lab, an independent AI workshop.',
+    'I’m interested in how language models behave in real applications, especially when they run on everyday hardware. I bring experience in Bayesian forecasting, model training, and model integration to that work.',
   navigation: [
     { label: 'Work', id: 'work' },
     { label: 'Research', id: 'research' },
@@ -78,32 +93,41 @@ export const portfolio = {
     { label: 'Contact', id: 'contact' },
   ],
   workIndex: [
-    { label: 'Maestro', detail: 'Computer vision', href: '#maestro' },
-    { label: 'MetaFlu', detail: 'Forecasting research', href: '#research' },
-    { label: 'DAIY Lab', detail: 'Collaboration', href: '#lab' },
+    { label: 'Shroud', detail: 'macOS prototype', href: '#shroud' },
+    { label: 'MetaFlu', detail: 'Published in Epidemics', href: '#research' },
+    { label: 'Maestro', detail: 'Public browser demo', href: '#maestro' },
   ],
   headings: {
     work: 'Selected work',
     research: 'Research',
-    services: 'Where I can help',
+    services: 'Technical expertise',
     about: 'A bit about me',
     contact: 'Contact',
   },
-  workIntro: 'An application, a research contribution, and a lab I’m part of.',
+  workIntro:
+    'Local language models for text masking and computer vision for age verification.',
   servicesIntro:
-    'For teams working with visual data, forecasting a time series, or integrating a model into their software.',
-  contactIntro:
-    'Have a project or a role in mind? Email me with a little context. I’m open to freelance, contract, and suitable employment opportunities.',
+    'I fine-tune models, build LLM applications, and integrate models into software.',
+  contactIntro: 'Reach out about a role, a project, or Shroud.',
   actions: {
-    work: 'Explore my work',
-    contact: 'Get in touch',
+    shroud: 'See Shroud',
+    email: 'Email me',
     github: 'GitHub',
     linkedin: 'LinkedIn',
     fallback: 'Find me on GitHub',
     top: 'Back to top',
   },
+  lossLandscape: {
+    title: 'LLM loss landscape',
+    loss: 'Loss',
+    direction1: 'θ₁',
+    direction2: 'θ₂',
+    scrubber: 'Descent',
+    caption: 'Illustrative 2D slice of a high-dimensional loss surface.',
+  },
   projectLabels: {
     feature: 'Engineering project',
+    vision: 'Planned workspace',
     privacy: 'Processing & the public demo',
     caption:
       'System schematic. The demo returns PASS, FAIL, or ESCALATE; it does not display an estimated age.',
@@ -114,42 +138,56 @@ export const portfolio = {
   },
   services: [
     {
-      title: 'Computer vision & machine learning',
+      title: 'LLM applications',
       description:
-        'Work through an image-based task: define the model’s inputs and outputs, evaluate its behavior, and connect inference to the application around it. Maestro is an example of this work.',
-      capabilities: ['Computer vision', 'Machine learning', 'Model evaluation'],
-    },
-    {
-      title: 'Statistical modeling & forecasting',
-      description:
-        'Develop models for time-series prediction and represent uncertainty in their forecasts. My research experience here comes from Bayesian modeling of influenza-like illness.',
+        'I fine-tune LLMs and build agent workflows with LangChain and n8n. I’ve prototyped applications that run small language models locally with Ollama and LM Studio.',
       capabilities: [
-        'Bayesian inference',
-        'Time series',
-        'Statistical modeling',
+        'LLM fine-tuning',
+        'LangChain',
+        'n8n',
+        'Ollama',
+        'LM Studio',
       ],
     },
     {
-      title: 'Inference & integration',
+      title: 'Machine learning & forecasting',
       description:
-        'Connect a model to usable software: handle inputs, structure outputs, and make processing boundaries clear. Consider on-device and backend inference in the context of the application’s constraints.',
-      capabilities: [
-        'AI inference',
-        'Application integration',
-        'Processing design',
-      ],
+        'I fine-tune and benchmark deep learning models in Python. For MetaFlu, I built a Bayesian model that forecasts influenza-like illness and quantifies uncertainty in its predictions.',
+      capabilities: ['Python', 'PyTorch', 'NumPy', 'Bayesian modeling'],
+    },
+    {
+      title: 'Computer vision',
+      description:
+        'I worked on face detection and anti-spoofing for Maestro. I fine-tuned its age model, exported it to ONNX, and integrated it into the public demo.',
+      capabilities: ['OpenCV', 'ONNX Runtime', 'FastAPI', 'TypeScript'],
     },
   ],
 };
 
 export const projects: readonly Project[] = [
   {
+    id: 'shroud',
+    title: 'Shroud',
+    category: 'Reversible text masking',
+    status: 'macOS prototype',
+    summary:
+      'I built Shroud with DAIY Lab. A fine-tuned open LLM runs on Apple Silicon and suggests sensitive text. You review what to mask, export a masked copy, and can restore the hidden text locally with an encrypted recovery file and a separate key.',
+    vision:
+      'We plan to build a document workspace where a local model masks sensitive text before a cloud model works with the masked copy.',
+    tags: ['Apple MLX', 'Python', 'FastAPI', 'React', 'TypeScript'],
+    links: [
+      { label: 'Ask me about Shroud', href: '#contact' },
+      { label: 'Visit DAIY Lab', href: daiyLabUrl },
+    ],
+    stages: [],
+  },
+  {
     id: 'maestro',
     visual: 'age-verification',
     title: 'Maestro',
     category: 'Age verification with computer vision',
     summary:
-      'An AI application for age-gated products. It checks whether a person meets an age threshold and can defer a decision when the result is uncertain.',
+      'I co-developed Maestro’s age-verification pipeline, working on face detection and anti-spoofing. I fine-tuned the age model, exported it to ONNX, and integrated it into the public demo.',
     tags: ['Computer vision', 'AI inference', 'Application integration'],
     links: [
       {
@@ -157,7 +195,7 @@ export const projects: readonly Project[] = [
         href: 'https://francescocelino.github.io/maestro-demo/',
       },
       {
-        label: 'View source',
+        label: 'View demo frontend',
         href: 'https://github.com/francescocelino/maestro-demo',
       },
       {
@@ -169,12 +207,12 @@ export const projects: readonly Project[] = [
       {
         title: 'Camera input',
         description:
-          'The public demo uses the browser camera and offers 16+, 18+, and 21+ gates. During an active session, it sends throttled JPEG frames to a separate backend.',
+          'The public demo uses the browser camera and lets you choose a 16+, 18+, or 21+ age gate.',
       },
       {
         title: 'Inference',
         description:
-          'The application connects visual input, backend inference, and a threshold decision. The production product is designed for on-device processing; the public demo uses a different processing path.',
+          'During an active demo session, the backend receives camera frames and evaluates the selected age threshold.',
       },
       {
         title: 'Threshold decisions',
@@ -183,7 +221,7 @@ export const projects: readonly Project[] = [
       },
     ],
     privacyNote:
-      'The production product is designed for on-device processing. The public browser demo sends throttled JPEG frames to a separate backend; it is not fully on-device.',
+      'Maestro is designed for on-device processing. The public browser demo sends throttled JPEG frames to a separate backend and returns PASS, FAIL, or ESCALATE.',
   },
 ];
 
@@ -192,9 +230,9 @@ export const research: ResearchWork = {
   title: 'MetaFlu',
   category: 'Bayesian Modeling & Epidemic Forecasting',
   contribution:
-    'I developed a statistical modeling framework using Bayesian inference and time-series forecasting to predict influenza-like illness.',
+    'I developed MetaFlu, a Bayesian time-series framework that forecasts influenza-like illness and quantifies uncertainty.',
   context:
-    'This work sits within computational epidemiology. I’m a co-author of the Influcast paper, which describes a collaborative forecasting initiative combining forecasts from multiple teams and models. The paper’s ensemble results belong to that collaboration, rather than to MetaFlu alone.',
+    'MetaFlu contributed forecasts to Influcast. I co-authored the paper in Epidemics, which reports ensemble results from forecasts submitted by multiple teams.',
   methods: [
     'Bayesian inference',
     'Time-series forecasting',
@@ -204,34 +242,41 @@ export const research: ResearchWork = {
   publication: {
     title:
       'Collaborative forecasting of influenza-like illness in Italy: The Influcast experience',
+    label: 'Read the Influcast paper',
     journal: 'Epidemics',
     year: 2025,
     authorship: 'Co-author',
     href: 'https://pubmed.ncbi.nlm.nih.gov/39965358/',
   },
+  forecastLink: {
+    label: 'View MetaFlu forecasts',
+    href: 'https://github.com/Predizioni-Epidemiologiche-Italia/Influcast/blob/main/previsioni/CSL_PoliTo-metaFlu/2024_06.csv',
+  },
   schematic: {
-    observed: 'Observed series',
-    model: 'Bayesian model',
-    forecast: 'Forecast uncertainty',
+    title: 'Weekly Bayesian forecast',
+    context: 'Illustrative',
+    cutoff: 'Observed through',
+    valueAxis: 'Synthetic index',
+    observed: 'Observed',
+    median: 'Forecast median',
+    interval: '80% predictive interval',
+    scrubber: 'Explore forecast weeks',
     caption:
-      'Observed data informs a Bayesian model, which produces a forecast with uncertainty. Illustrative schematic, not study data or a MetaFlu result.',
+      'Each new observation updates the next four weeks. Illustrative schematic, not study data or a MetaFlu result.',
   },
 };
 
 export const lab: LabParticipation = {
   id: 'lab',
   name: 'DAIY Lab',
-  relationship: 'I’m part of DAIY Lab.',
+  relationship: 'I helped start DAIY Lab, a small independent AI workshop.',
   description:
-    'It’s an independent, open-source AI workshop focused on small models, self-hostable tools, ordinary hardware, and open experimentation. It’s a shared space for exploration alongside my individual work. The lab’s website explains its direction and includes illustrative tools for thinking about local AI.',
+    'We explore small language models and self-hostable tools that run on ordinary hardware. We built the Shroud prototype together.',
   focus: [
     'Small models',
     'Self-hostable tools',
     'Ordinary hardware',
     'Open experimentation',
   ],
-  links: [
-    { label: 'Explore DAIY Lab', href: 'https://22johngalt.github.io/DIY/' },
-    { label: 'Lab website source', href: 'https://github.com/22JohnGalt/DIY' },
-  ],
+  links: [{ label: 'Explore DAIY Lab', href: daiyLabUrl }],
 };

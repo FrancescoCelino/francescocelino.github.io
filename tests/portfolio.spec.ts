@@ -25,6 +25,26 @@ for (const reducedMotion of ['reduce', 'no-preference'] as const) {
           () => document.documentElement.scrollWidth <= window.innerWidth,
         ),
       ).toBe(true);
+      const clippedLabels = await page
+        .locator('.signal svg, .forecast svg')
+        .evaluateAll((figures) =>
+          figures.flatMap((figure) => {
+            const plot = figure.getBoundingClientRect();
+            return Array.from(figure.querySelectorAll('text'))
+              .filter((label) => {
+                if (label.getClientRects().length === 0) return false;
+                const box = label.getBoundingClientRect();
+                return (
+                  box.top < plot.top - 0.5 ||
+                  box.bottom > plot.bottom + 0.5 ||
+                  box.left < plot.left - 0.5 ||
+                  box.right > plot.right + 0.5
+                );
+              })
+              .map((label) => label.textContent);
+          }),
+        );
+      expect(clippedLabels).toEqual([]);
       if (reducedMotion === 'reduce' || width < 1024) {
         const input = await page.locator('.stage-input').boundingBox();
         const labels = await page.locator('.pipeline-stages').boundingBox();
@@ -61,24 +81,84 @@ test('navigation, configured contacts, and project destinations', async ({
   await expect(
     page.getByRole('link', { name: portfolio.email }),
   ).toHaveAttribute('href', `mailto:${portfolio.email}`);
+  await expect(page.getByRole('link', { name: 'Email me' })).toHaveAttribute(
+    'href',
+    `mailto:${portfolio.email}`,
+  );
   await expect(
     page.getByRole('link', { name: 'LinkedIn', exact: true }),
   ).toHaveAttribute('href', portfolio.linkedin);
   await expect(
     page.getByRole('link', { name: 'Try the demo' }),
   ).toHaveAttribute('href', 'https://francescocelino.github.io/maestro-demo/');
-  await expect(page.getByRole('link', { name: 'View source' })).toHaveAttribute(
-    'href',
-    'https://github.com/francescocelino/maestro-demo',
-  );
+  await expect(
+    page.getByRole('link', { name: 'View demo frontend' }),
+  ).toHaveAttribute('href', 'https://github.com/francescocelino/maestro-demo');
   await expect(
     page.getByRole('link', { name: 'Technical report' }),
   ).toHaveAttribute('href', 'https://doi.org/10.5281/zenodo.21509794');
-  await expect(page.locator('a[href^="mailto:"]')).toHaveCount(1);
-  await expect(page.locator('.privacy-note')).toContainText(
-    'not fully on-device',
+  await expect(page.locator('a[href^="mailto:"]')).toHaveCount(2);
+  const demoDisclosure = page.locator('#maestro .privacy-note');
+  await expect(demoDisclosure).toContainText(
+    'designed for on-device processing',
+  );
+  await expect(demoDisclosure).toContainText(
+    'sends throttled JPEG frames to a separate backend',
   );
 });
+
+for (const reducedMotion of ['reduce', 'no-preference'] as const) {
+  test(`the LLM pitch and actions fit on a narrow first screen (${reducedMotion})`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 320, height: 720 });
+    await page.emulateMedia({ reducedMotion });
+    await page.goto('/');
+    await page.evaluate(() => document.fonts.ready);
+    await expect(
+      page.getByText(portfolio.role, { exact: true }).first(),
+    ).toBeInViewport({
+      ratio: 1,
+    });
+    await expect(page.getByText(portfolio.education)).toBeInViewport({
+      ratio: 1,
+    });
+    await expect(page.getByText(portfolio.availability)).toBeInViewport({
+      ratio: 1,
+    });
+    await expect(page.getByRole('link', { name: 'See Shroud' })).toBeInViewport(
+      {
+        ratio: 1,
+      },
+    );
+    await expect(page.getByRole('link', { name: 'Email me' })).toBeInViewport({
+      ratio: 1,
+    });
+    const actions = (await page.locator('.hero-actions').boundingBox())!;
+    const landscape = (await page.locator('.signal').boundingBox())!;
+    expect(landscape.y).toBeGreaterThan(actions.y + actions.height);
+    await page.screenshot({
+      path: `artifacts/llm-hero-320-${reducedMotion}.png`,
+    });
+  });
+
+  for (const [fragment, heading] of [
+    ['shroud', /^Shroud/],
+    ['research', /^MetaFlu$/],
+    ['contact', /^Contact$/],
+  ] as const) {
+    test(`fresh #${fragment} arrivals reach the section (${reducedMotion})`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.emulateMedia({ reducedMotion });
+      await page.goto(`/#${fragment}`);
+      await expect(
+        page.getByRole('heading', { name: heading }),
+      ).toBeInViewport();
+    });
+  }
+}
 
 test('keyboard navigation exposes the skip link and focus', async ({
   page,
@@ -110,6 +190,43 @@ test('keyboard navigation exposes the skip link and focus', async ({
   expect(reached.has(`mailto:${portfolio.email}`)).toBe(true);
   expect(reached.has(portfolio.linkedin)).toBe(true);
   await expect(page.locator(':focus')).toBeInViewport();
+});
+
+test('Shroud offers contact and DAIY Lab links and describes the planned workspace', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByRole('link', { name: 'See Shroud' }).click();
+  await expect(page).toHaveURL(/#shroud$/);
+
+  const project = page.getByRole('article', { name: /^Shroud/ });
+  await expect(project).toBeInViewport();
+  await expect(page.getByRole('article').first()).toHaveAccessibleName(
+    /^Shroud/,
+  );
+  await expect(project).toContainText('macOS prototype');
+  await expect(project).toContainText(
+    'A fine-tuned open LLM runs on Apple Silicon',
+  );
+  await expect(project).toContainText('I built Shroud with DAIY Lab.');
+  await expect(project).toContainText('restore the hidden text locally');
+  await expect(project).toContainText(
+    'encrypted recovery file and a separate key',
+  );
+  await expect(
+    project.getByRole('heading', { name: 'Planned workspace' }),
+  ).toBeVisible();
+  await expect(project).toContainText(
+    'a cloud model works with the masked copy',
+  );
+  await expect(project.locator('.project-story')).toHaveCount(0);
+  await expect(project.getByRole('link')).toHaveCount(2);
+  await expect(
+    project.getByRole('link', { name: 'Visit DAIY Lab' }),
+  ).toHaveAttribute('href', 'https://22johngalt.github.io/DIY/');
+  await project.getByRole('link', { name: 'Ask me about Shroud' }).click();
+  await expect(page).toHaveURL(/#contact$/);
+  await expect(page.locator('#contact')).toBeInViewport();
 });
 
 test('scroll changes the schematic; reduced motion removes pinning', async ({
@@ -186,9 +303,7 @@ test('short viewports and text enlargement remain usable', async ({ page }) => {
       () => document.documentElement.scrollWidth <= window.innerWidth,
     ),
   ).toBe(true);
-  await expect(
-    page.getByRole('link', { name: 'Explore my work' }),
-  ).toBeVisible();
+  await expect(page.getByRole('link', { name: 'See Shroud' })).toBeVisible();
 });
 
 test('production metadata and local assets are complete', async ({
@@ -196,7 +311,11 @@ test('production metadata and local assets are complete', async ({
   request,
 }) => {
   await page.goto('/');
-  await expect(page).toHaveTitle('Francesco Celino — AI Engineer');
+  await expect(page).toHaveTitle(portfolio.pageTitle);
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+    'content',
+    portfolio.description,
+  );
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     'href',
     'https://francescocelino.github.io/',
@@ -223,6 +342,10 @@ test('basic destinations remain available without JavaScript', async ({
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   await page.goto('http://127.0.0.1:4173/');
+  await expect(page.getByText(/fine-tuned open LLM/)).toBeVisible();
+  await expect(
+    page.getByText(/Master’s in Mathematical Engineering/),
+  ).toBeVisible();
   await expect(page.getByRole('link', { name: 'my GitHub' })).toBeVisible();
   await expect(
     page.getByRole('link', { name: 'Maestro age-verification demo' }),
@@ -239,33 +362,45 @@ test('research and lab distinguish individual contributions from collaboration',
     feature.getByRole('heading', { name: 'MetaFlu', exact: true }),
   ).toBeVisible();
   await expect(feature).toContainText(
-    'I developed a statistical modeling framework',
+    'I developed MetaFlu, a Bayesian time-series framework',
   );
   await expect(feature).toContainText('Co-author');
   await expect(feature).toContainText('Epidemics (2025)');
   await expect(feature).toContainText(
-    'ensemble results belong to that collaboration',
+    'ensemble results from forecasts submitted by multiple teams',
   );
   await expect(
-    feature.getByRole('link', { name: research.publication.title }),
+    feature.getByRole('link', { name: 'Read the Influcast paper' }),
   ).toHaveAttribute('href', research.publication.href);
-  await expect(feature.getByRole('link')).toHaveCount(1);
+  await expect(
+    feature.getByRole('link', { name: 'View MetaFlu forecasts' }),
+  ).toHaveAttribute('href', research.forecastLink.href);
+  await expect(feature.getByRole('link')).toHaveCount(2);
   await expect(feature.locator('figcaption')).toContainText(
     'not study data or a MetaFlu result',
   );
-  await expect(page.locator('#lab')).toContainText('I’m part of DAIY Lab.');
+  const labSection = page.locator('#lab');
+  await expect(labSection).toContainText('I helped start DAIY Lab');
+  await expect(labSection.getByRole('link')).toHaveCount(1);
   for (const link of lab.links)
     await expect(
-      page.getByRole('link', { name: link.label, exact: true }),
+      labSection.getByRole('link', { name: link.label, exact: true }),
     ).toHaveAttribute('href', link.href);
-  await expect(page.locator('#expertise')).not.toContainText(
-    'Proofs of concept',
-  );
+  await expect(
+    page.locator('#expertise').getByRole('heading', { level: 3 }),
+  ).toHaveText([
+    'LLM applications',
+    'Machine learning & forecasting',
+    'Computer vision',
+  ]);
+  const shortcuts = page.getByRole('navigation', { name: 'Featured work' });
+  await expect(shortcuts.getByRole('link')).toHaveText([
+    /Shroud/,
+    /MetaFlu/,
+    /Maestro/,
+  ]);
   for (const item of portfolio.workIndex) {
-    await page
-      .getByRole('navigation', { name: 'Featured work and collaboration' })
-      .getByRole('link', { name: new RegExp(item.label) })
-      .click();
+    await shortcuts.getByRole('link', { name: new RegExp(item.label) }).click();
     await expect(page).toHaveURL(new RegExp(`${item.href}$`));
   }
 });

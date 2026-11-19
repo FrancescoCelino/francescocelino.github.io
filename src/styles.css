@@ -176,12 +176,17 @@ h1 > span {
   margin-top: 28px;
   font-size: 20px;
 }
+.hero-education {
+  margin-top: 16px;
+  font-size: 17px;
+  font-weight: 550;
+}
 .hero-actions {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 28px;
+  margin-top: 22px;
 }
 .button {
   display: inline-flex;
@@ -224,7 +229,7 @@ h1 > span {
   gap: 10px;
   color: var(--muted);
   font-size: 15px;
-  margin-top: 25px;
+  margin-top: 14px;
   max-width: 560px;
 }
 .availability > span {
@@ -234,59 +239,119 @@ h1 > span {
   background: var(--copper);
   border-radius: 50%;
 }
-.signal {
-  overflow: clip;
-  position: relative;
+.signal,
+.forecast {
   min-width: 0;
-  margin: -10px -20px 0;
+  color: var(--muted);
 }
-.signal-surface {
+.figure-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 12px;
+  padding-block: 10px;
+  border-top: 1px solid var(--line);
+  color: var(--paper);
+  font-family: var(--display);
+  font-size: clamp(13px, 1.15vw, 17px);
+  font-weight: 500;
+}
+.figure-context {
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+}
+.figure-axis-label {
+  fill: var(--muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.signal svg {
+  margin-block: 5px 2px;
+}
+.signal-travel {
+  /* The desktop work index already supplies the other 50px of clearance. */
+  margin-bottom: 86px;
+}
+.figure-scrubber {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  color: var(--paper);
+  font-size: 14px;
+}
+.figure-scrubber input {
   width: 100%;
+  min-width: 0;
+  height: 44px;
+  margin: 0;
+  accent-color: var(--copper);
+  cursor: ew-resize;
+  touch-action: pan-y;
 }
-.signal-axis {
-  position: absolute;
-  width: 1px;
-  height: 80%;
-  background: var(--line);
-  top: 10%;
-  left: 50%;
-  opacity: 0.55;
-  transform: rotate(36deg);
-  z-index: -1;
+.figure-scrubber input:focus-visible {
+  outline: 2px solid var(--copper);
+  outline-offset: 2px;
+  border-radius: 3px;
 }
-.signal-cross {
-  position: absolute;
-  width: 13px;
-  height: 13px;
+.signal figcaption,
+.forecast figcaption {
+  max-width: none;
+  padding-top: 9px;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
 }
-.signal-cross::before,
-.signal-cross::after {
-  content: '';
-  position: absolute;
-  background: #82909e;
+.loss-floor {
+  fill: var(--slate);
+  fill-opacity: 0.42;
+  stroke: var(--line);
+  stroke-width: 0.75;
+  stroke-dasharray: 3 4;
 }
-.signal-cross::before {
-  height: 1px;
-  width: 13px;
-  top: 6px;
+.loss-axis {
+  stroke: #71869a;
+  stroke-width: 0.95;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
-.signal-cross::after {
-  width: 1px;
-  height: 13px;
-  left: 6px;
+.loss-mesh {
+  stroke: #8ca2b5;
+  stroke-width: 0.8;
 }
-.cross-top {
-  top: 5%;
-  left: 34px;
+.loss-rim {
+  stroke: var(--muted);
+  stroke-width: 1.15;
 }
-.cross-bottom {
-  bottom: 4%;
-  right: 30px;
+.loss-route,
+.loss-start {
+  stroke: var(--copper);
+  stroke-width: 1.8;
+}
+.loss-route {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.loss-gradient {
+  stroke: var(--paper);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.loss-start {
+  fill: var(--ink);
+}
+.loss-current {
+  fill: var(--copper);
+  stroke: var(--ink);
+  stroke-width: 1.15;
 }
 .work-index {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: 50px;
   border-top: 1px solid var(--line);
 }
@@ -371,6 +436,16 @@ h1 > span {
 }
 .project-summary > p {
   font-size: 21px;
+}
+.project-vision {
+  margin-top: 22px;
+}
+.project-vision > h4 {
+  font-size: 18px;
+}
+.project-vision > p {
+  margin-top: 8px;
+  color: var(--muted);
 }
 .tags {
   display: flex;
@@ -502,6 +577,7 @@ h1 > span {
   border-radius: 2px;
 }
 .generic-project {
+  position: static;
   min-height: 350px;
   display: flex;
   flex-direction: column;
@@ -655,16 +731,9 @@ figcaption {
   max-width: 420px;
 }
 .privacy-note {
-  display: flex;
-  gap: 25px;
-  border-top: 1px solid #43505d;
-  padding: 32px 0 0;
-  margin-top: 50px;
-}
-.privacy-symbol {
-  color: var(--copper);
-  font-size: 30px;
-  line-height: 1.3;
+  border-left: 2px solid var(--copper);
+  padding-left: 14px;
+  margin-bottom: 16px;
 }
 .privacy-note h4 {
   font-family: inherit;
@@ -675,7 +744,6 @@ figcaption {
 .privacy-note p {
   color: var(--muted);
   font-size: 16px;
-  max-width: 850px;
 }
 .research {
   background: var(--ink);
@@ -707,63 +775,110 @@ figcaption {
   font-size: 24px;
   max-width: 600px;
 }
-.forecast {
-  min-width: 0;
-  color: var(--muted);
-}
-.forecast-labels {
+.forecast-meta,
+.forecast-legend {
   display: flex;
-  justify-content: space-between;
-  gap: 15px;
+  flex-wrap: wrap;
+  gap: 5px 15px;
   font-size: 14px;
 }
-.forecast-model {
-  text-align: center;
-  color: var(--copper);
-  font-size: 15px;
-  margin-top: 8px;
+.forecast-meta {
+  justify-content: space-between;
+  align-items: baseline;
+  margin-block: 5px 2px;
+  font-variant-numeric: tabular-nums;
 }
-.forecast figcaption {
-  max-width: none;
-  text-align: center;
-  margin-top: 18px;
+.forecast-cutoff-date {
+  white-space: nowrap;
+}
+.forecast-cutoff-date strong {
+  margin-inline-start: 2px;
+  color: var(--copper);
+  font-weight: 600;
+}
+.forecast .figure-axis-label {
+  font-size: 11px;
+}
+.forecast-legend {
+  list-style: none;
+  margin: 8px 0 13px;
+  padding: 0;
+}
+.forecast-legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.legend-observed {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--paper);
+}
+.legend-median {
+  width: 17px;
+  border-top: 2px dashed var(--copper);
+}
+.legend-interval {
+  width: 16px;
+  height: 8px;
+  border-block: 1px solid #ac7b5f;
+  background: #e7a57b40;
+}
+.forecast-axis,
+.forecast-gridline {
+  stroke-width: 0.8;
+}
+.forecast-axis {
+  stroke: #71869a;
+}
+.forecast-gridline {
+  stroke: var(--line);
+}
+.forecast-cutoff {
+  stroke: var(--muted);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+}
+.forecast-interval {
+  fill: var(--copper);
+  fill-opacity: 0.18;
+  stroke: var(--copper);
+  stroke-opacity: 0.56;
+  stroke-width: 0.75;
+}
+.forecast-median {
+  stroke: var(--copper);
+  stroke-width: 1.7;
+  stroke-dasharray: 4 3;
+  stroke-linecap: round;
+}
+.forecast-observed {
+  stroke: var(--muted);
+  stroke-width: 1.35;
+  stroke-linejoin: round;
+}
+.forecast-observation {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 1;
+}
+.forecast-latest {
+  fill: var(--ink);
+  stroke: var(--copper);
+  stroke-width: 1.7;
 }
 .publication {
   border-top: 1px solid #647584;
-  margin-top: 45px;
-  padding-top: 24px;
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 50px;
+  padding-top: 16px;
 }
 .publication-meta {
-  font-size: 17px;
-  color: var(--muted);
-}
-.publication-meta span {
-  display: block;
-}
-.publication-meta span:first-child {
-  color: var(--copper);
-  margin-bottom: 6px;
-}
-.publication-link {
-  display: flex;
-  align-items: start;
-  gap: 25px;
-  transition: color 180ms ease;
-}
-.publication-link h3 {
-  font-size: clamp(22px, 2.1vw, 32px);
-  line-height: 1.4;
-  letter-spacing: -0.035em;
-}
-.publication-link > span {
-  font-size: 30px;
+  font-size: 16px;
   color: var(--copper);
 }
-.publication-link:hover {
-  color: var(--copper);
+.publication-title {
+  margin: 6px 0 10px;
+  font-size: 18px;
 }
 .lab {
   background: var(--slate);
@@ -958,8 +1073,8 @@ figcaption {
   h1 {
     font-size: clamp(40px, 5.5vw, 62px);
   }
-  .signal {
-    margin: 0 -10px;
+  .signal .figure-axis-label {
+    font-size: 18px;
   }
   .section-shell {
     padding-block: 65px;
@@ -1012,10 +1127,6 @@ figcaption {
     max-width: 650px;
     justify-self: end;
   }
-  .publication {
-    grid-template-columns: 1fr 2fr;
-    gap: 30px;
-  }
   .lab {
     grid-template-columns: 1fr 1.2fr;
   }
@@ -1037,16 +1148,30 @@ figcaption {
   }
   .hero {
     grid-template-columns: 1fr;
-    padding-top: 35px;
+    padding-top: 28px;
   }
   h1 {
     font-size: clamp(38px, 8.5vw, 60px);
   }
   .hero-description {
     font-size: 19px;
+    margin-top: 18px;
+  }
+  .hero-education {
+    font-size: 16px;
+  }
+  .hero-actions .button {
+    padding-inline: 16px;
+    gap: 14px;
   }
   .signal {
-    display: none;
+    width: 100%;
+    max-width: 420px;
+    justify-self: start;
+    margin-top: 25px;
+  }
+  .signal .figure-axis-label {
+    font-size: 15px;
   }
   .availability {
     font-size: 14px;
@@ -1156,13 +1281,6 @@ figcaption {
   .story-chapter p {
     font-size: 18px;
   }
-  .privacy-note {
-    gap: 14px;
-    margin-top: 25px;
-  }
-  .privacy-note p {
-    font-size: 16px;
-  }
   .research-category {
     font-size: 21px;
   }
@@ -1175,32 +1293,6 @@ figcaption {
   }
   .research-copy > p + p {
     font-size: 18px;
-  }
-  .forecast-labels {
-    font-size: 12px;
-  }
-  .forecast figcaption {
-    font-size: 13px;
-  }
-  .publication {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    margin-top: 35px;
-  }
-  .publication-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 20px;
-    font-size: 15px;
-  }
-  .publication-meta span:first-child {
-    margin: 0;
-  }
-  .publication-link {
-    gap: 15px;
-  }
-  .publication-link h3 {
-    font-size: 22px;
   }
   .lab,
   .service,
@@ -1263,6 +1355,22 @@ figcaption {
     order: 3;
     flex-basis: 100%;
     font-size: 13px;
+  }
+}
+@media (max-width: 600px) {
+  .forecast .figure-axis-label {
+    font-size: 14px;
+  }
+}
+@media (max-width: 460px) {
+  .signal .figure-axis-label {
+    font-size: 18px;
+  }
+  .forecast .figure-axis-label {
+    font-size: 19px;
+  }
+  .forecast-extra-date {
+    display: none;
   }
 }
 .motion-reduced .pipeline {
