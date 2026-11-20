@@ -115,6 +115,9 @@ for (const reducedMotion of ['reduce', 'no-preference'] as const) {
     await page.emulateMedia({ reducedMotion });
     await page.goto('/');
     await page.evaluate(() => document.fonts.ready);
+    await expect(page.locator('.hero-description')).toContainText(
+      'I co-founded DAIY Lab.',
+    );
     await expect(
       page.getByText(portfolio.role, { exact: true }).first(),
     ).toBeInViewport({
@@ -380,7 +383,7 @@ test('research and lab distinguish individual contributions from collaboration',
     'not study data or a MetaFlu result',
   );
   const labSection = page.locator('#lab');
-  await expect(labSection).toContainText('I helped start DAIY Lab');
+  await expect(labSection).toContainText('I co-founded DAIY Lab');
   await expect(labSection.getByRole('link')).toHaveCount(1);
   for (const link of lab.links)
     await expect(

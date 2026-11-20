@@ -1,5 +1,9 @@
 # Local validation (17 November 2026)
 
+## DAIY Lab co-founder copy (20 November 2026)
+
+The hero and DAIY Lab section now state the owner's co-founder role and give the team credit for Shroud. `npm run check`, `npm run build`, and all **41 Playwright tests** passed. Reviewed both sections at 1440, 768, and 320 CSS pixels in both motion settings. The hero actions fit at 320 × 720. Captures are in `artifacts/daiy-cofounder/`.
+
 ## Portfolio and sharing punctuation (19 November 2026)
 
 Formatting, type checking, lint, the production build, and all 41 Playwright tests passed on macOS with Node 24.22.3. Checked the built page title, Open Graph and Twitter metadata, and the sharing image for em dashes.
