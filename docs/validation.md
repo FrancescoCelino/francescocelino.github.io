@@ -4,6 +4,8 @@
 
 The hero and DAIY Lab section now state the owner's co-founder role and give the team credit for Shroud. `npm run check`, `npm run build`, and all **41 Playwright tests** passed. Reviewed both sections at 1440, 768, and 320 CSS pixels in both motion settings. The hero actions fit at 320 × 720. Captures are in `artifacts/daiy-cofounder/`.
 
+GitHub Actions exposed a 30.39 px shift at 412 px when the body font loaded. Reproduced that shift locally with the unadjusted fallback, shortened the hero sentence, and extended the existing test to cover both fallback paths.
+
 ## Portfolio and sharing punctuation (19 November 2026)
 
 Formatting, type checking, lint, the production build, and all 41 Playwright tests passed on macOS with Node 24.22.3. Checked the built page title, Open Graph and Twitter metadata, and the sharing image for em dashes.

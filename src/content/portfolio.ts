@@ -82,7 +82,7 @@ export const portfolio = {
   github: 'https://github.com/francescocelino',
   availability:
     'Open to LLM research engineering and applied ML roles, contracts, and freelance work.',
-  hero: 'I co-founded DAIY Lab. We built Shroud, a macOS prototype that uses a fine-tuned open LLM to flag sensitive text for human review.',
+  hero: 'I co-founded DAIY Lab. We built Shroud, a macOS prototype that flags sensitive text with a fine-tuned open LLM.',
   education: 'Master’s in Mathematical Engineering, Politecnico di Torino',
   about:
     'I’m interested in how language models behave in real applications, especially when they run on everyday hardware. I bring experience in Bayesian forecasting, model training, and model integration to that work.',

@@ -424,11 +424,19 @@ test('delayed body font keeps the mobile introduction stable', async ({
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('.hero-description')).toBeVisible();
     await page.evaluate(() => document.fonts.load('450 40px "Sora Variable"'));
-    const before = await page.locator('#work').boundingBox();
+    const work = page.locator('#work');
+    const before = await work.boundingBox();
+    // Some runners lack the local font used by the metric-adjusted fallback.
+    await page.addStyleTag({
+      content:
+        ":root { font-family: 'Source Sans 3 Variable', Arial, sans-serif; }",
+    });
+    const withoutAdjustedFallback = await work.boundingBox();
     releaseFont();
     await page.evaluate(() => document.fonts.ready);
-    const after = await page.locator('#work').boundingBox();
+    const after = await work.boundingBox();
     expect(Math.abs(after!.y - before!.y)).toBeLessThan(24);
+    expect(Math.abs(after!.y - withoutAdjustedFallback!.y)).toBeLessThan(24);
   } finally {
     releaseFont();
   }
